@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>cn.ac.big.bigd</groupId>
-	<artifactId>gsaFamily-Index</artifactId>
+	<artifactId>dataInterServices</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>gsaFamily-Index</name>
-	<description>gsa family index</description>
+	<name>dataInterServices</name>
+	<description>ngdc data services</description>
 
 	<!--<parent>-->
 		<!--<groupId>org.springframework.boot</groupId>-->

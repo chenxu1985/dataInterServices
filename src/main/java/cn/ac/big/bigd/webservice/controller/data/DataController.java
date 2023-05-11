@@ -1,4 +1,4 @@
-package cn.ac.big.bigd.webservice.controller.fair;
+package cn.ac.big.bigd.webservice.controller.data;
 
 import cn.ac.big.bigd.webservice.mapper.gsa.GsaMapper;
 import cn.ac.big.bigd.webservice.model.gsa.FairDetail;
@@ -19,11 +19,11 @@ import java.util.*;
  * author chenxu
  */
 @RestController
-public class FairController {
+public class DataController {
 
     @Autowired
     private GsaMapper gsaMapper;
-    @RequestMapping(value = "/getFairAccession")
+    @RequestMapping(value = "/getAccessionList")
     public List<FairList> getFairAccession(HttpServletResponse httpServletResponse) {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
         List<FairList> fairLists = this.gsaMapper.getFairAccessionGsa();
@@ -31,7 +31,7 @@ public class FairController {
         return fairLists;
     }
 
-    @RequestMapping(value = "/getFairDetailGsa/{accession}")
+    @RequestMapping(value = "/getAccessionDetail/{accession}")
     public FairDetail getFairDetailGsa(@PathVariable("accession") String accession,HttpServletResponse httpServletResponse) {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
         FairDetail fairDetail = this.gsaMapper.getFairDetailGsa(accession);
