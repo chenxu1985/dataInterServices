@@ -1,9 +1,15 @@
 package cn.ac.big.bigd.webservice.controller.data;
 
+import cn.ac.big.bigd.webservice.mapper.data.DataMapper;
 import cn.ac.big.bigd.webservice.mapper.gsa.GsaMapper;
+import cn.ac.big.bigd.webservice.mapper.human.StudyMapper;
 import cn.ac.big.bigd.webservice.model.gsa.FairDetail;
-import cn.ac.big.bigd.webservice.model.gsa.FairList;
+import cn.ac.big.bigd.webservice.model.gsa.DataList;
 import cn.ac.big.bigd.webservice.model.gsa.Fund;
+import cn.ac.big.bigd.webservice.utility.HttpRequestUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -23,20 +31,134 @@ public class DataController {
 
     @Autowired
     private GsaMapper gsaMapper;
-    @RequestMapping(value = "/getAccessionList")
-    public List<FairList> getFairAccession(HttpServletResponse httpServletResponse) {
-        httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
-        List<FairList> fairLists = this.gsaMapper.getFairAccessionGsa();
+    @Autowired
+    private DataMapper dataMapper;
+    @Autowired
+    private StudyMapper studyMapper;
 
+    @RequestMapping(value = "/getAccessionList")
+    public List<DataList> getAccessionList(HttpServletResponse httpServletResponse) throws Exception {
+        httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
+        String fundString = this.dataMapper.getFund();
+        String fundPam = this.dataMapper.getFundPam();
+//        List<String> fundList = this.dataMapper.getFundList();
+        String prjId = this.gsaMapper.getPrjId(fundString);
+        List<Integer> prjIdList = this.gsaMapper.getPrjIdList(fundString);
+        List<DataList> fairLists = new ArrayList<>();
+        //gsa
+        List<DataList> gsaList = this.gsaMapper.getGsaAccession(prjIdList);
+        fairLists.addAll(gsaList);
+        //gsa-human
+        List<DataList> humanList = this.studyMapper.getHumanAccession(prjIdList);
+        fairLists.addAll(humanList);
+        //omix
+        String omixUrl = "https://ngdc.cncb.ac.cn/omix/getOmixAccession/"+prjId;
+        String resultOmix = "";
+        resultOmix  = HttpRequestUtil.doHttpGetResponseJson(omixUrl, null);
+        JSONArray array = JSON.parseArray(resultOmix);
+        List<DataList> omixList = JSONObject.parseArray(array.toJSONString(),DataList.class);
+        fairLists.addAll(omixList);
+        //biocode
+        String biocodeUrl = "http://192.168.164.16:12321/biocode/getFairAccession/"+fundPam;
+        String resultBio = "";
+        resultBio  = HttpRequestUtil.doHttpGetResponseJson(biocodeUrl, null);
+        List<DataList> bioList = JSONObject.parseArray(resultBio,DataList.class);
+        fairLists.addAll(bioList);
         return fairLists;
     }
 
     @RequestMapping(value = "/getAccessionDetail/{accession}")
-    public FairDetail getFairDetailGsa(@PathVariable("accession") String accession,HttpServletResponse httpServletResponse) {
+    public FairDetail getAccessionDetail(@PathVariable("accession") String accession,HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
-        FairDetail fairDetail = this.gsaMapper.getFairDetailGsa(accession);
-        List<Fund> funds = this.gsaMapper.getFundGsa(fairDetail.getPrjId());
-        fairDetail.setFund(funds);
+        FairDetail fairDetail = new FairDetail();
+        String urlLink = "";
+        String result = "";
+        SimpleDateFormat simpleDateFormat = null;
+        String prjString = "";
+        String numberString = "";
+        List<Fund> funds = null;
+        if(accession.contains("CRA")||accession.contains("HRA")){
+            if(accession.contains("CRA")){
+                fairDetail = this.gsaMapper.getFairDetailGsa(accession);
+                funds = this.gsaMapper.getFundGsa(Integer.parseInt(fairDetail.getPrjId()));
+                fairDetail.setFund(funds);
+            } else {
+                fairDetail = this.studyMapper.getFairDetailHuman(accession);
+                funds = this.gsaMapper.getFundGsa(Integer.parseInt(fairDetail.getPrjId()));
+                fairDetail.setFund(funds);
+            }
+
+        } else {
+            if(accession.contains("OMIX")){
+                urlLink= "https://ngdc.cncb.ac.cn/omix/getDetailOmix/"+accession;
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            } else if(accession.contains("BT")){
+                urlLink = "http://192.168.164.16:12321/biocode/getFairDetailBiocode/"+accession;
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            }
+            result  = HttpRequestUtil.doHttpGetResponseJson(urlLink, null);
+            JSONObject jsonObject = JSONObject.parseObject(result);
+            String  omixAcc = (String) jsonObject.get("accession");
+            String  type = (String) jsonObject.get("type");
+            String  title = (String) jsonObject.get("title");
+            String  version = (String) jsonObject.get("version");
+            String  description = (String) jsonObject.get("description");
+            String  keyword = (String) jsonObject.get("keyword");
+            String  subject = (String) jsonObject.get("subject");
+            String  datePublished = (String) jsonObject.get("datePublished");
+            Date publishDate = simpleDateFormat.parse(datePublished);
+            String  dateModified = (String) jsonObject.get("dateModified");
+            Date modifyDate = simpleDateFormat.parse(dateModified);
+
+            String  creativeWorkStatus = (String) jsonObject.get("creativeWorkStatus");
+            if(accession.contains("OMIX")){
+                int  prjId = (int) jsonObject.get("prjId");
+                prjString = prjId+"";
+                int  fileNumber = (int) jsonObject.get("fileNumber");
+                numberString = fileNumber+"";
+                funds = this.gsaMapper.getFundGsa(Integer.parseInt(prjString));
+                fairDetail.setFund(funds);
+            } else if(accession.contains("BT")){
+                prjString = (String) jsonObject.get("prjId");
+                numberString = (String) jsonObject.get("fileNumber");
+                if(creativeWorkStatus.equals("已发布")){
+                    creativeWorkStatus = "3";
+                }
+                funds = (List) jsonObject.get("fund");
+                fairDetail.setFund(funds);
+            }
+            String  prjAccession = (String) jsonObject.get("prjAccession");
+            String  userName = (String) jsonObject.get("userName");
+            String  email = (String) jsonObject.get("email");
+            String  org = (String) jsonObject.get("org");
+            String  url = (String) jsonObject.get("url");
+            String  accessRestrictions = (String) jsonObject.get("accessRestrictions");
+            String  fileSize = (String) jsonObject.get("fileSize");
+            String  encodingFormat = (String) jsonObject.get("encodingFormat");
+            fairDetail.setAccession(omixAcc);
+            fairDetail.setType(type);
+            fairDetail.setTitle(title);
+            fairDetail.setVersion(version);
+            fairDetail.setDescription(description);
+            fairDetail.setKeyword(keyword);
+            fairDetail.setSubject(subject);
+            fairDetail.setDatePublished(publishDate);
+            fairDetail.setDateModified(modifyDate);
+            fairDetail.setCreativeWorkStatus(creativeWorkStatus);
+            fairDetail.setPrjId(prjString);
+            fairDetail.setPrjAccession(prjAccession);
+            fairDetail.setUserName(userName);
+            fairDetail.setEmail(email);
+            fairDetail.setOrg(org);
+            fairDetail.setUrl(url);
+            fairDetail.setAccessRestrictions(accessRestrictions);
+            fairDetail.setFileNumber(numberString);
+            fairDetail.setFileSize(fileSize);
+            fairDetail.setEncodingFormat(encodingFormat);
+        }
+
+
+
         return fairDetail;
     }
     /**
