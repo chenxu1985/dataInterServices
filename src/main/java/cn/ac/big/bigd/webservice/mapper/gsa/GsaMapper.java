@@ -11,7 +11,9 @@ public interface GsaMapper {
     List<Cra> getCraListBySampleId(int sampleId);
     List<GsaBrowse> getGsaBrowseList();
     Cra selectCraByProjectAccession(String accession);
-    List<FairList> getFairAccessionGsa();
+    List<DataList> getGsaAccession(List<Integer> prjIdList);
     FairDetail getFairDetailGsa(String accession);
     List<Fund> getFundGsa(int prjId);
+    String getPrjId(String fundString);
+    List<Integer> getPrjIdList(String fundString);
 }

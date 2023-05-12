@@ -62,8 +62,8 @@
         <result column="craUrl" property="craUrl" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <resultMap id="FairList" type="FairList">
-        <result column="id" property="id" jdbcType="VARCHAR"/>
+    <resultMap id="DataList" type="DataList">
+        <result column="accession" property="id" jdbcType="VARCHAR"/>
         <result column="publishDate" property="publishDate" jdbcType="VARCHAR"/>
         <result column="downloadUrl" property="downloadUrl" jdbcType="VARCHAR"/>
     </resultMap>
@@ -71,16 +71,25 @@
 
     <resultMap id="FairDetail" type="FairDetail">
         <result column="accession" property="accession" jdbcType="VARCHAR"/>
-        <result column="releaseTime" property="releaseTime" jdbcType="VARCHAR"/>
+        <result column="datePublished" property="datePublished" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
         <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="VARCHAR"/>
         <result column="description" property="description" jdbcType="VARCHAR"/>
-        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="keyword" property="keyword" jdbcType="VARCHAR"/>
+        <result column="subject" property="subject" jdbcType="VARCHAR"/>
+        <result column="dateModified" property="dateModified" jdbcType="TIMESTAMP"/>
+        <result column="creativeWorkStatus" property="creativeWorkStatus" jdbcType="VARCHAR"/>
+        <result column="prjId" property="prjId" jdbcType="VARCHAR"/>
+        <result column="prjAccession" property="prjAccession" jdbcType="VARCHAR"/>
         <result column="userName" property="userName" jdbcType="VARCHAR"/>
         <result column="email" property="email" jdbcType="VARCHAR"/>
         <result column="org" property="org" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="accessRestrictions" property="accessRestrictions" jdbcType="VARCHAR"/>
         <result column="fileNumber" property="fileNumber" jdbcType="VARCHAR"/>
         <result column="fileSize" property="fileSize" jdbcType="VARCHAR"/>
-        <result column="prjId" property="prjId" jdbcType="INTEGER"/>
+        <result column="encodingFormat" property="encodingFormat" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="Fund" type="Fund">
@@ -154,24 +163,43 @@
             c.accession = #{accession}
     </select>
 
-    <select id="getFairAccessionGsa" resultMap="FairList">
-    select c.accession as id,c.release_time as publishDate,CONCAT("https://ngdc.cncb.ac.cn/gsa/browsse/",c.accession) as downloadUrl from fair_dataset f,prj_grants pg,pro_grants pog,project p,cra c
-    where f.grant_id=pg.grant_ID and pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id
-    and c.prj_id=p.prj_id and c.`status`=3 and c.release_state=2
-    group by c.accession
-    </select>
-
     <select id="getFairDetailGsa" resultMap="FairDetail">
-    select c.prj_id as prjId,c.accession,c.release_time as releaseTime,c.title,c.description,
-    CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",c.accession) as url,CONCAT(u.first_name,' ',u.middle_name,' ',u.last_name) as userName,u.email,u.organization_standard as org
-    ,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size/1024) as fileSize
-    from cra c,user u,run_data_file rdf
-    where c.accession=#{accession} and c.user_id=u.user_id and rdf.cra_id=c.cra_id and rdf.`status`=10 and rdf.release_state=2
+        select c.accession,c.release_time as datePublished,
+        "Dataset" as type,c.title,"v1" as version,c.description,"-" as keyword,"-" as subject,c.modify_time as dateModified,(case when c.release_state=2 then 3 when c.release_state=1 then 2 end) as creativeWorkStatus
+        ,c.prj_id as prjId,"-" as prjAccession,CONCAT(u.first_name,' ',u.middle_name,' ',u.last_name) as userName,u.email,u.organization_standard as org,(case when c.release_state=2 then CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",c.accession) when c.release_state=1 then "-" end) as url,
+        "open" as accessRestrictions,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size/1024) as fileSize,rdt.run_data_type_name as encodingFormat
+        from cra c,user u,run_data_file rdf,run_data_type rdt
+        where  u.user_id=c.user_id and rdt.run_data_type_id=rdf.run_data_type_id and rdf.cra_id=c.cra_id and c.accession=#{accession}
     </select>
     <select id="getFundGsa" resultMap="Fund">
-    select prj.grant_ID as grantId,prj.program as funder,prj.grant_title as fundingName,p.prj_id,p.accession
-    from pro_grants pro ,prj_grants prj,project p where prj.agency='Chinese Academy of Sciences (CAS)'
-    and prj.grants_id=pro.grants_id
-    and p.prj_id=pro.prj_id and p.prj_id=#{prjId}
+        select prj.grant_ID as grantId,prj.program as funder,prj.grant_title as fundingName,p.prj_id,p.accession
+        from pro_grants pro ,prj_grants prj,project p
+        where
+         prj.grants_id=pro.grants_id
+        and p.prj_id=pro.prj_id and p.prj_id=#{prjId}
+    </select>
+    <select id="getPrjId" resultType="String" parameterType="String">
+        select GROUP_CONCAT(DISTINCT p.prj_id) from  prj_grants pg,pro_grants pog,project p
+        where pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2) and pg.grant_ID REGEXP #{fundString}
+        group by p.note
+    </select>
+    <select id="getPrjIdList" resultType="String" parameterType="String">
+        select DISTINCT p.prj_id from  prj_grants pg,pro_grants pog,project p
+        where pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2) and pg.grant_ID REGEXP #{fundString}
+        <!--<foreach collection="list" item="item" open="(" separator="," close=")">-->
+            <!--#{item}-->
+        <!--</foreach>-->
+    </select>
+    <select id="getGsaAccession" resultMap="DataList" parameterType="list">
+        select c.accession,c.release_time as publishDate,(case
+        when c.release_state=2 then CONCAT("https://ngdc.cncb.ac.cn/gsa/browsse/",c.accession)
+        when c.release_state=1 then "-"
+        end) as downloadUrl
+        from prj_grants pg,pro_grants pog,project p,cra c
+        where   pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and c.prj_id=p.prj_id and c.`status`=3 and p.prj_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+       group by c.accession
     </select>
 </mapper>

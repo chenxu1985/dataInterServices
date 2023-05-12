@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ac.big.bigd.webservice.mapper.data.DataMapper">
+
+    <select id="getFund" resultType="String">
+      select GROUP_CONCAT(LEFT(grant_id, LENGTH(grant_id)-2) separator '|') from fund where status=1 group by status
+    </select>
+    <select id="getFundList" resultType="String">
+      select LEFT(grant_id, LENGTH(grant_id)-2) from fund where status=1
+    </select>
+    <select id="getFundPam" resultType="String">
+      select GROUP_CONCAT(LEFT(grant_id, LENGTH(grant_id)-2)) from fund where status=1 group by status
+    </select>
+
+</mapper>

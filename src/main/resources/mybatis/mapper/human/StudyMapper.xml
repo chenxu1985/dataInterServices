@@ -73,6 +73,33 @@
         </association>
     </resultMap>
 
+    <resultMap id="DataListHuman" type="cn.ac.big.bigd.webservice.model.gsa.DataList">
+        <result column="accession" property="id" jdbcType="VARCHAR"/>
+        <result column="publishDate" property="publishDate" jdbcType="VARCHAR"/>
+        <result column="downloadUrl" property="downloadUrl" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="FairDetailHuman" type="cn.ac.big.bigd.webservice.model.gsa.FairDetail">
+        <result column="accession" property="accession" jdbcType="VARCHAR"/>
+        <result column="datePublished" property="datePublished" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="keyword" property="keyword" jdbcType="VARCHAR"/>
+        <result column="subject" property="subject" jdbcType="VARCHAR"/>
+        <result column="dateModified" property="dateModified" jdbcType="TIMESTAMP"/>
+        <result column="creativeWorkStatus" property="creativeWorkStatus" jdbcType="VARCHAR"/>
+        <result column="prjId" property="prjId" jdbcType="VARCHAR"/>
+        <result column="prjAccession" property="prjAccession" jdbcType="VARCHAR"/>
+        <result column="userName" property="userName" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="org" property="org" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="accessRestrictions" property="accessRestrictions" jdbcType="VARCHAR"/>
+        <result column="fileNumber" property="fileNumber" jdbcType="VARCHAR"/>
+        <result column="fileSize" property="fileSize" jdbcType="VARCHAR"/>
+        <result column="encodingFormat" property="encodingFormat" jdbcType="VARCHAR"/>
+    </resultMap>
 
     <select id="getUnSynchronizationStudys" parameterType="Integer" resultMap="Study">
         select st.*,u.user_id,u.first_name as uFirstName,u.middle_name as uMiddleName,u.last_name as uLastName,u.email as uEmail,u.organization as uOrganization,u.cas_user_id as uCasId
@@ -96,4 +123,24 @@
 		UPDATE study set sample_synchronization=1 WHERE study_id=#{studyId}
 	</update>
 
+    <select id="getHumanAccession" resultMap="DataListHuman" parameterType="list">
+        select accession,release_time as publishDate,(case
+        when release_state=2 then CONCAT("https://ngdc.cncb.ac.cn/gsa-human/browsse/",accession)
+        when release_state=1 then "-"
+        end) as downloadUrl
+        from study
+        where `status`=3 and prj_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by accession
+    </select>
+    <select id="getFairDetailHuman" resultMap="FairDetailHuman">
+        select s.accession,s.release_time as datePublished,
+        "Dataset" as type,s.title,"v1" as version,s.description,"-" as keyword,"-" as subject,s.modify_time as dateModified,(case when s.release_state=2 then 3 when s.release_state=1 then 2 end) as creativeWorkStatus
+        ,s.prj_id as prjId,s.prj_accession as prjAccession,CONCAT(u.first_name,' ',u.middle_name,' ',u.last_name) as userName,u.email,u.organization as org,CONCAT("https://ngdc.cncb.ac.cn/gsa-human/browse/",s.accession) as url,
+        "open" as accessRestrictions,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size/1024) as fileSize,rdt.run_data_type_name as encodingFormat
+        from study s,user u,run_data_file rdf,run_data_type rdt
+        where  u.user_id=s.user_id and rdt.run_data_type_id=rdf.run_data_type_id and rdf.study_id=s.study_id and s.accession=#{accession}
+    </select>
 </mapper>

@@ -1,11 +1,12 @@
 package cn.ac.big.bigd.webservice.model.gsa;
 
-public class FairList {
+public class DataList {
     public String id;
 
     public String publishDate;
 
     public String downloadUrl;
+
 
     public String getId() {
         return id;
