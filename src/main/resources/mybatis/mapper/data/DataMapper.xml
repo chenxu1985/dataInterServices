@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.ac.big.bigd.webservice.mapper.data.DataMapper">
-
+    <resultMap id="Fund" type="cn.ac.big.bigd.webservice.model.data.Fund">
+        <result column="grant_id" property="grantId" jdbcType="VARCHAR"/>
+        <result column="grant_dmp" property="grantDmp" jdbcType="VARCHAR"/>
+    </resultMap>
     <select id="getFund" resultType="String">
-      select GROUP_CONCAT(LEFT(grant_id, LENGTH(grant_id)-2) separator '|') from fund where status=1 group by status
+      select GROUP_CONCAT(grant_id separator '|') from fund where status=1 group by status
     </select>
     <select id="getFundList" resultType="String">
-      select LEFT(grant_id, LENGTH(grant_id)-2) from fund where status=1
+      select grant_id from fund where status=1
     </select>
     <select id="getFundPam" resultType="String">
-      select GROUP_CONCAT(LEFT(grant_id, LENGTH(grant_id)-2)) from fund where status=1 group by status
+      select GROUP_CONCAT(grant_id) from fund where status=1 group by status
+    </select>
+
+    <select id="getFundDetaiList" parameterType="hashMap" resultMap="Fund">
+      select * from fund where status=1
     </select>
 
 </mapper>

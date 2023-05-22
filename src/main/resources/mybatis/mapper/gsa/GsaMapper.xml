@@ -167,7 +167,7 @@
         select c.accession,c.release_time as datePublished,
         "Dataset" as type,c.title,"v1" as version,c.description,"-" as keyword,"-" as subject,c.modify_time as dateModified,(case when c.release_state=2 then 3 when c.release_state=1 then 2 end) as creativeWorkStatus
         ,c.prj_id as prjId,"-" as prjAccession,CONCAT(u.first_name,' ',u.middle_name,' ',u.last_name) as userName,u.email,u.organization_standard as org,(case when c.release_state=2 then CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",c.accession) when c.release_state=1 then "-" end) as url,
-        "open" as accessRestrictions,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size/1024) as fileSize,rdt.run_data_type_name as encodingFormat
+        "open" as accessRestrictions,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size) as fileSize,rdt.run_data_type_name as encodingFormat
         from cra c,user u,run_data_file rdf,run_data_type rdt
         where  u.user_id=c.user_id and rdt.run_data_type_id=rdf.run_data_type_id and rdf.cra_id=c.cra_id and c.accession=#{accession}
     </select>

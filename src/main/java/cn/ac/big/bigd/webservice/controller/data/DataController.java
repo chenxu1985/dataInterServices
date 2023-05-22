@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -111,6 +112,7 @@ public class DataController {
             Date modifyDate = simpleDateFormat.parse(dateModified);
 
             String  creativeWorkStatus = (String) jsonObject.get("creativeWorkStatus");
+            String  fileSize = "";
             if(accession.contains("OMIX")){
                 int  prjId = (int) jsonObject.get("prjId");
                 prjString = prjId+"";
@@ -118,14 +120,19 @@ public class DataController {
                 numberString = fileNumber+"";
                 funds = this.gsaMapper.getFundGsa(Integer.parseInt(prjString));
                 fairDetail.setFund(funds);
+                int size = (int) jsonObject.get("fileSize");
+                fileSize = size+"";
             } else if(accession.contains("BT")){
                 prjString = (String) jsonObject.get("prjId");
                 numberString = (String) jsonObject.get("fileNumber");
+                numberString = "0";
                 if(creativeWorkStatus.equals("已发布")){
                     creativeWorkStatus = "3";
                 }
-                funds = (List) jsonObject.get("fund");
+                funds = JSON.parseArray(jsonObject.getJSONArray("fund").toString(), Fund.class);
                 fairDetail.setFund(funds);
+                fileSize = (String) jsonObject.get("fileSize");
+                fileSize = "0";
             }
             String  prjAccession = (String) jsonObject.get("prjAccession");
             String  userName = (String) jsonObject.get("userName");
@@ -133,7 +140,6 @@ public class DataController {
             String  org = (String) jsonObject.get("org");
             String  url = (String) jsonObject.get("url");
             String  accessRestrictions = (String) jsonObject.get("accessRestrictions");
-            String  fileSize = (String) jsonObject.get("fileSize");
             String  encodingFormat = (String) jsonObject.get("encodingFormat");
             fairDetail.setAccession(omixAcc);
             fairDetail.setType(type);
@@ -156,7 +162,44 @@ public class DataController {
             fairDetail.setFileSize(fileSize);
             fairDetail.setEncodingFormat(encodingFormat);
         }
+        if(!accession.contains("BT")){
+            List<Fund> fundG = fairDetail.getFund();
+            for(Fund fo:fundG){
+                String  grantId = fo.getGrantId();
+                List<cn.ac.big.bigd.webservice.model.data.Fund> fundList = this.dataMapper.getFundDetaiList();
+                for(cn.ac.big.bigd.webservice.model.data.Fund fu:fundList){
+                    String dmp = fu.getGrantDmp();
+                    String grant = fu.getGrantId();
+                    if(grantId.contains(grant)){
+                        fo.setGrantId(dmp);
+                    }
+                }
+            }
+        } else {
+            List<Fund> fundG = fairDetail.getFund();
+            for(Fund fo:fundG){
+                int count = 0;
+                String  grantId = fo.getGrantId();
+                List<cn.ac.big.bigd.webservice.model.data.Fund> fundList = this.dataMapper.getFundDetaiList();
+                for(cn.ac.big.bigd.webservice.model.data.Fund fu:fundList){
+                    String dmp = fu.getGrantDmp();
+                    String grant = fu.getGrantId();
+                    if(grantId.contains(grant)){
+                        if(count==0){
+                            fo.setGrantId(dmp);
+                            count++;
+                        } else {
+                            Fund foNew = new Fund();
+                            foNew.setGrantId(dmp);
+                            fundG.add(foNew);
+                            count++;
+                        }
 
+                    }
+                }
+                break;
+            }
+        }
 
 
         return fairDetail;
