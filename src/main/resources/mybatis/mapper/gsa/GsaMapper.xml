@@ -202,4 +202,17 @@
         </foreach>
        group by c.accession
     </select>
+    <select id="getPrjAcc" resultType="String" parameterType="String">
+        select GROUP_CONCAT(DISTINCT p.accession) from  prj_grants pg,pro_grants pog,project p
+        where pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2) and pg.grant_ID REGEXP #{fundString}
+        group by p.note
+    </select>
+    <select id="getFundProAcc" resultMap="Fund">
+        select prj.grant_ID as grantId,prj.program as funder,prj.grant_title as fundingName,p.prj_id,p.accession
+        from pro_grants pro ,prj_grants prj,project p
+        where
+         prj.grants_id=pro.grants_id
+        and p.prj_id=pro.prj_id and p.accession=#{accession}
+    </select>
+
 </mapper>

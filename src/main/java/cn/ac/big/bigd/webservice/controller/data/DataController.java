@@ -65,6 +65,19 @@ public class DataController {
         resultBio  = HttpRequestUtil.doHttpGetResponseJson(biocodeUrl, null);
         List<DataList> bioList = JSONObject.parseArray(resultBio,DataList.class);
         fairLists.addAll(bioList);
+        //GWH
+        String prjAcc = this.gsaMapper.getPrjAcc(fundString);
+        String gwhUrl = "https://ngdc.cncb.ac.cn/gwh/getGwhAccession/"+prjAcc;
+        String resultGwh = "";
+        resultGwh = HttpRequestUtil.doHttpGetResponseJson(gwhUrl, null);
+        List<DataList> gwhList = JSONObject.parseArray(resultGwh,DataList.class);
+        fairLists.addAll(gwhList);
+        //DataBaseCommons
+        String dbUrl = "https://ngdc.cncb.ac.cn/databasecommons/api/biodb/list/"+fundPam;
+        String resultDb = "";
+        resultDb  = HttpRequestUtil.doHttpGetResponseJson(dbUrl, null);
+        List<DataList> dbList = JSONObject.parseArray(resultDb,DataList.class);
+        fairLists.addAll(dbList);
         return fairLists;
     }
 
@@ -83,12 +96,11 @@ public class DataController {
                 fairDetail = this.gsaMapper.getFairDetailGsa(accession);
                 funds = this.gsaMapper.getFundGsa(Integer.parseInt(fairDetail.getPrjId()));
                 fairDetail.setFund(funds);
-            } else {
+            } else if(accession.contains("HRA")) {
                 fairDetail = this.studyMapper.getFairDetailHuman(accession);
                 funds = this.gsaMapper.getFundGsa(Integer.parseInt(fairDetail.getPrjId()));
                 fairDetail.setFund(funds);
             }
-
         } else {
             if(accession.contains("OMIX")){
                 urlLink= "https://ngdc.cncb.ac.cn/omix/getDetailOmix/"+accession;
@@ -96,9 +108,22 @@ public class DataController {
             } else if(accession.contains("BT")){
                 urlLink = "http://192.168.164.16:12321/biocode/getFairDetailBiocode/"+accession;
                 simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            } else if(accession.contains("GWH")){
+                urlLink = "https://ngdc.cncb.ac.cn/gwh/getDetailGwh/"+accession;
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            } else if(accession.contains("DB")){
+                urlLink = "https://ngdc.cncb.ac.cn/databasecommons/api/biodb/detail/"+accession;
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             }
-            result  = HttpRequestUtil.doHttpGetResponseJson(urlLink, null);
-            JSONObject jsonObject = JSONObject.parseObject(result);
+            JSONObject jsonObject = new JSONObject();
+            if(accession.contains("GWH")){
+                result  = HttpRequestUtil.doHttpGetResponseJson(urlLink, null);
+                JSONArray jsonA = JSONArray.parseArray(result);
+                jsonObject = (JSONObject) jsonA.get(0);
+            } else {
+                result  = HttpRequestUtil.doHttpGetResponseJson(urlLink, null);
+                jsonObject = JSONObject.parseObject(result);
+            }
             String  omixAcc = (String) jsonObject.get("accession");
             String  type = (String) jsonObject.get("type");
             String  title = (String) jsonObject.get("title");
@@ -122,25 +147,35 @@ public class DataController {
                 fairDetail.setFund(funds);
                 int size = (int) jsonObject.get("fileSize");
                 fileSize = size+"";
-            } else if(accession.contains("BT")){
+            } else if(accession.contains("BT")||accession.contains("DB")){
                 prjString = (String) jsonObject.get("prjId");
                 numberString = (String) jsonObject.get("fileNumber");
                 numberString = "0";
-                if(creativeWorkStatus.equals("已发布")){
+                if(creativeWorkStatus.contains("已发布")){
                     creativeWorkStatus = "3";
                 }
                 funds = JSON.parseArray(jsonObject.getJSONArray("fund").toString(), Fund.class);
                 fairDetail.setFund(funds);
                 fileSize = (String) jsonObject.get("fileSize");
                 fileSize = "0";
+            } else if(accession.contains("GWH")){
+                prjString = (String) jsonObject.get("prjAccession");
+                numberString = (String) jsonObject.get("fileNumber");
+                numberString = "1";
+                if(creativeWorkStatus.equals("已发布")){
+                    creativeWorkStatus = "3";
+                }
+                funds = this.gsaMapper.getFundProAcc(prjString);
+                fairDetail.setFund(funds);
+                fileSize = (String) jsonObject.get("fileSize");
             }
             String  prjAccession = (String) jsonObject.get("prjAccession");
             String  userName = (String) jsonObject.get("userName");
             String  email = (String) jsonObject.get("email");
             String  org = (String) jsonObject.get("org");
-            String  url = (String) jsonObject.get("url");
             String  accessRestrictions = (String) jsonObject.get("accessRestrictions");
             String  encodingFormat = (String) jsonObject.get("encodingFormat");
+            String  url = (String) jsonObject.get("url");
             fairDetail.setAccession(omixAcc);
             fairDetail.setType(type);
             fairDetail.setTitle(title);
@@ -161,8 +196,9 @@ public class DataController {
             fairDetail.setFileNumber(numberString);
             fairDetail.setFileSize(fileSize);
             fairDetail.setEncodingFormat(encodingFormat);
+
         }
-        if(!accession.contains("BT")){
+        if(!accession.contains("BT")&&!accession.contains("DB")){
             List<Fund> fundG = fairDetail.getFund();
             for(Fund fo:fundG){
                 String  grantId = fo.getGrantId();

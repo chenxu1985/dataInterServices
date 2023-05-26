@@ -16,4 +16,6 @@ public interface GsaMapper {
     List<Fund> getFundGsa(int prjId);
     String getPrjId(String fundString);
     List<Integer> getPrjIdList(String fundString);
+    String getPrjAcc(String fundString);
+    List<Fund> getFundProAcc(String accession);
 }
