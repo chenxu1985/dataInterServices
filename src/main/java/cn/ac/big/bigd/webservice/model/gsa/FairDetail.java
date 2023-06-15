@@ -12,6 +12,7 @@ public class FairDetail {
     public String keyword;
     public String subject;
     public Date datePublished;
+    public Date dateAvailable;
     public Date dateModified;
     public String creativeWorkStatus;
     public String prjId;
@@ -26,6 +27,7 @@ public class FairDetail {
     public String fileSize;
     public String encodingFormat;
     public List<Fund> fund;
+    public String isControl;
 
     public String getAccession() {
         return accession;
@@ -194,5 +196,21 @@ public class FairDetail {
 
     public void setEncodingFormat(String encodingFormat) {
         this.encodingFormat = encodingFormat;
+    }
+
+    public Date getDateAvailable() {
+        return dateAvailable;
+    }
+
+    public void setDateAvailable(Date dateAvailable) {
+        this.dateAvailable = dateAvailable;
+    }
+
+    public String getIsControl() {
+        return isControl;
+    }
+
+    public void setIsControl(String isControl) {
+        this.isControl = isControl;
     }
 }

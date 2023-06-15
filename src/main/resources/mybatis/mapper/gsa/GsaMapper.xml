@@ -72,6 +72,7 @@
     <resultMap id="FairDetail" type="FairDetail">
         <result column="accession" property="accession" jdbcType="VARCHAR"/>
         <result column="datePublished" property="datePublished" jdbcType="TIMESTAMP"/>
+        <result column="dateAvailable" property="dateAvailable" jdbcType="TIMESTAMP"/>
         <result column="type" property="type" jdbcType="VARCHAR"/>
         <result column="title" property="title" jdbcType="VARCHAR"/>
         <result column="version" property="version" jdbcType="VARCHAR"/>
@@ -90,6 +91,7 @@
         <result column="fileNumber" property="fileNumber" jdbcType="VARCHAR"/>
         <result column="fileSize" property="fileSize" jdbcType="VARCHAR"/>
         <result column="encodingFormat" property="encodingFormat" jdbcType="VARCHAR"/>
+        <result column="isControl" property="isControl" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="Fund" type="Fund">
@@ -164,7 +166,7 @@
     </select>
 
     <select id="getFairDetailGsa" resultMap="FairDetail">
-        select c.accession,c.release_time as datePublished,
+        select c.accession,c.archived_time as datePublished,c.release_time as dateAvailable,c.is_controlled as isControl,
         "Dataset" as type,c.title,"v1" as version,c.description,"-" as keyword,"-" as subject,c.modify_time as dateModified,(case when c.release_state=2 then 3 when c.release_state=1 then 2 end) as creativeWorkStatus
         ,c.prj_id as prjId,"-" as prjAccession,CONCAT(u.first_name,' ',u.middle_name,' ',u.last_name) as userName,u.email,u.organization_standard as org,(case when c.release_state=2 then CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",c.accession) when c.release_state=1 then "-" end) as url,
         "open" as accessRestrictions,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size) as fileSize,rdt.run_data_type_name as encodingFormat

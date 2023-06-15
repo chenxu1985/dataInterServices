@@ -78,6 +78,38 @@ public class DataController {
         resultDb  = HttpRequestUtil.doHttpGetResponseJson(dbUrl, null);
         List<DataList> dbList = JSONObject.parseArray(resultDb,DataList.class);
         fairLists.addAll(dbList);
+        //GVM
+        int len = 30;
+        String[] prjAccSp = prjAcc.split(",");
+        String[][] result = new String[(prjAccSp.length + len - 1) / len][];
+        int index = 0;
+        for (int i = 0; i < prjAccSp.length; i += len) {
+            result[index++] = Arrays.copyOfRange(prjAccSp, i, Math.min(i + len, prjAccSp.length));
+        }
+        String gvmUrl = "";
+        for(String[] rs:result){
+            String pjAcc = "";
+            for(String acc:rs){
+                if(pjAcc!=""){
+                    pjAcc = pjAcc+","+acc;
+                } else {
+                    pjAcc = acc;
+                }
+            }
+            gvmUrl = gvmUrl = "https://ngdc.cncb.ac.cn/gvm/getGVMDataSetList/"+pjAcc;
+            String resultGvm = "";
+            resultGvm  = HttpRequestUtil.doHttpGetResponseJson(gvmUrl, null);
+            List<DataList> gvmList = JSONObject.parseArray(resultGvm,DataList.class);
+            fairLists.addAll(gvmList);
+        }
+
+
+//        //        String genbaseUrl = "https://ngdc.cncb.ac.cn/gvm/getGVMDataSetList/"+prjAcc;
+//        String genbaseUrl = "http://192.168.164.95:9500/genbase/api/acclist/XDB380503";
+//        String resultGenBase = "";
+//        resultGenBase  = HttpRequestUtil.doHttpGetResponseJson(genbaseUrl, null);
+//        List<DataList> genbaseList = JSONObject.parseArray(resultGenBase,DataList.class);
+//        fairLists.addAll(genbaseList);
         return fairLists;
     }
 
@@ -115,14 +147,23 @@ public class DataController {
                 urlLink = "https://ngdc.cncb.ac.cn/databasecommons/api/biodb/detail/"+accession;
                 simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             }
+            else if(accession.contains("GVM")||accession.contains("GVP")){
+                urlLink = "https://ngdc.cncb.ac.cn/gvm/getGVMDataDetail/"+accession;
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            }
+//            else {
+//                urlLink = "http://192.168.164.95:9500/genbase/api/accdetail/"+accession;
+//                simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//            }
             JSONObject jsonObject = new JSONObject();
-            if(accession.contains("GWH")){
+
+            if(accession.contains("OMIX")||accession.contains("BT")||accession.contains("DB")){
+                result  = HttpRequestUtil.doHttpGetResponseJson(urlLink, null);
+                jsonObject = JSONObject.parseObject(result);
+            } else {
                 result  = HttpRequestUtil.doHttpGetResponseJson(urlLink, null);
                 JSONArray jsonA = JSONArray.parseArray(result);
                 jsonObject = (JSONObject) jsonA.get(0);
-            } else {
-                result  = HttpRequestUtil.doHttpGetResponseJson(urlLink, null);
-                jsonObject = JSONObject.parseObject(result);
             }
             String  omixAcc = (String) jsonObject.get("accession");
             String  type = (String) jsonObject.get("type");
@@ -134,19 +175,26 @@ public class DataController {
             String  datePublished = (String) jsonObject.get("datePublished");
             Date publishDate = simpleDateFormat.parse(datePublished);
             String  dateModified = (String) jsonObject.get("dateModified");
-            Date modifyDate = simpleDateFormat.parse(dateModified);
-
-            String  creativeWorkStatus = (String) jsonObject.get("creativeWorkStatus");
+            if(dateModified!=null){
+                Date modifyDate = simpleDateFormat.parse(dateModified);
+                fairDetail.setDateModified(modifyDate);
+            }
+            String  creativeWorkStatus = "";
+            if(accession.contains("OMIX")||accession.contains("BT")||accession.contains("DB")||accession.contains("GWH")){
+                creativeWorkStatus = (String) jsonObject.get("creativeWorkStatus");
+            } else {
+                creativeWorkStatus =  jsonObject.get("creativeWorkStatus") +"";
+            }
             String  fileSize = "";
             if(accession.contains("OMIX")){
                 int  prjId = (int) jsonObject.get("prjId");
                 prjString = prjId+"";
-                int  fileNumber = (int) jsonObject.get("fileNumber");
-                numberString = fileNumber+"";
+                numberString = (String) jsonObject.get("fileNumber");
                 funds = this.gsaMapper.getFundGsa(Integer.parseInt(prjString));
                 fairDetail.setFund(funds);
-                int size = (int) jsonObject.get("fileSize");
-                fileSize = size+"";
+//                Long size = (Long) jsonObject.get("fileSize");
+//                fileSize = size+"";
+                fileSize = (String) jsonObject.get("fileSize");
             } else if(accession.contains("BT")||accession.contains("DB")){
                 prjString = (String) jsonObject.get("prjId");
                 numberString = (String) jsonObject.get("fileNumber");
@@ -168,6 +216,34 @@ public class DataController {
                 funds = this.gsaMapper.getFundProAcc(prjString);
                 fairDetail.setFund(funds);
                 fileSize = (String) jsonObject.get("fileSize");
+            }else if(accession.contains("GVM")||accession.contains("GVP")){
+                prjString = (String) jsonObject.get("prjAccession");
+                numberString = jsonObject.get("fileNumber")+"";
+                //numberString = "1";
+                if(creativeWorkStatus.equals("已发布")){
+                    creativeWorkStatus = "3";
+                }
+                funds = this.gsaMapper.getFundProAcc(prjString);
+                fairDetail.setFund(funds);
+                fileSize = (String) jsonObject.get("fileSize");
+                if(fileSize==null){
+                    fileSize = "0";
+                } else {
+                    if(fileSize.contains(".0")){
+                        fileSize = fileSize.replace(".0","");
+                    }
+                    fileSize = Integer.parseInt(fileSize)*1024+"";
+                }
+            }else {
+                prjString = (String) jsonObject.get("prjAccession");
+                numberString = jsonObject.get("fileNumber")+"";
+                numberString = "1";
+                if(creativeWorkStatus.equals("已发布")){
+                    creativeWorkStatus = "3";
+                }
+                funds = this.gsaMapper.getFundProAcc(prjString);
+                fairDetail.setFund(funds);
+                fileSize = (String) jsonObject.get("fileSize");
             }
             String  prjAccession = (String) jsonObject.get("prjAccession");
             String  userName = (String) jsonObject.get("userName");
@@ -176,6 +252,23 @@ public class DataController {
             String  accessRestrictions = (String) jsonObject.get("accessRestrictions");
             String  encodingFormat = (String) jsonObject.get("encodingFormat");
             String  url = (String) jsonObject.get("url");
+            String  dateAvailable = "";
+            String  isControl = "";
+            Date availableDate ;
+            dateAvailable = (String) jsonObject.get("dateAvailable");
+
+            if(accession.contains("GVM")||accession.contains("GVP")||accession.contains("BT")||accession.contains("DB")){
+                availableDate = publishDate;
+                isControl = "0";
+            } else  if(accession.contains("GWH")){
+                availableDate = simpleDateFormat.parse(dateAvailable);
+                 Integer inCon = (Integer) jsonObject.get("isControl");
+                isControl = inCon +"";
+            } else {
+                availableDate = simpleDateFormat.parse(dateAvailable);
+                isControl = (String) jsonObject.get("isControl");
+            }
+
             fairDetail.setAccession(omixAcc);
             fairDetail.setType(type);
             fairDetail.setTitle(title);
@@ -184,7 +277,8 @@ public class DataController {
             fairDetail.setKeyword(keyword);
             fairDetail.setSubject(subject);
             fairDetail.setDatePublished(publishDate);
-            fairDetail.setDateModified(modifyDate);
+            fairDetail.setDateAvailable(availableDate);
+            fairDetail.setIsControl(isControl);
             fairDetail.setCreativeWorkStatus(creativeWorkStatus);
             fairDetail.setPrjId(prjString);
             fairDetail.setPrjAccession(prjAccession);
