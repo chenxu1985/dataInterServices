@@ -138,9 +138,9 @@
     <select id="getFairDetailHuman" resultMap="FairDetailHuman">
         select s.accession,s.archived_time as datePublished,s.release_time as dateAvailable,s.is_controlled_access as isControl,
         "Dataset" as type,s.title,"v1" as version,s.description,"-" as keyword,"-" as subject,s.modify_time as dateModified,(case when s.release_state=2 then 3 when s.release_state=1 then 2 end) as creativeWorkStatus
-        ,s.prj_id as prjId,s.prj_accession as prjAccession,CONCAT(u.first_name,' ',u.middle_name,' ',u.last_name) as userName,u.email,u.organization as org,CONCAT("https://ngdc.cncb.ac.cn/gsa-human/browse/",s.accession) as url,
+        ,s.prj_id as prjId,s.prj_accession as prjAccession,CONCAT(u.first_name,' ',u.middle_name,' ',u.last_name) as userName,u.email,u.organization as org,(case when s.release_state=2 then CONCAT("https://ngdc.cncb.ac.cn/gsa-human/browse/",s.accession) when s.release_state=1 then "-" end) as url,
         "open" as accessRestrictions,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size) as fileSize,rdt.run_data_type_name as encodingFormat
         from study s,user u,run_data_file rdf,run_data_type rdt
-        where  u.user_id=s.user_id and rdt.run_data_type_id=rdf.run_data_type_id and rdf.study_id=s.study_id and s.accession=#{accession}
+        where  u.user_id=s.user_id and rdt.run_data_type_id=rdf.run_data_type_id and rdf.study_id=s.study_id and s.accession=#{accession} and s.status=3
     </select>
 </mapper>
