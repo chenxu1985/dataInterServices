@@ -100,6 +100,21 @@
         <result column="fundingName" property="fundingName" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <resultMap id="CraDownLoad" type="CraDownLoad">
+        <id column="cra_id" property="craId" jdbcType="INTEGER"/>
+        <result column="accession" property="accession" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="DateFileSize" type="DateFileSize">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="date" property="date" jdbcType="VARCHAR" />
+        <result column="file_size" property="fileSize" jdbcType="DOUBLE" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
     <select id="selectRecordsByReleaseDate" parameterType="hashMap" resultMap="GSAForBioOne">
       SELECT
 	    gsa.accession as gsa_accession,gsa.release_time as release_time,
@@ -216,5 +231,64 @@
          prj.grants_id=pro.grants_id
         and p.prj_id=pro.prj_id and p.accession=#{accession}
     </select>
-
+    <select id="getFastqAchivedData" resultType="double">
+        SELECT IFNULL(sum(rdf.run_file_size)/(281926058404.1026*1024),0) as fastqPb FROM run_data_file rdf WHERE rdf.status=10 AND (rdf.run_data_type_id =1 or rdf.run_data_type_id is null ) ;
+    </select>
+    <select id="getOtherAchivedData" resultType="double">
+        SELECT IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0) as otherPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.run_data_type_id !=1;
+    </select>
+    <select id="getFastqPubData" resultType="double">
+        SELECT IFNULL(sum(rdf.run_file_size)/(281926058404.1026*1024),0) as fastqPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.release_state=2 AND (rdf.run_data_type_id =1 or rdf.run_data_type_id is null ) ;
+    </select>
+    <select id="getOtherPubData" resultType="double">
+        SELECT IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0) as otherPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.release_state=2 and rdf.run_data_type_id !=1;
+    </select>
+    <select id="getUserList" resultType="String">
+        select DISTINCT cas_user_id from user where is_deleted=0 and is_active=1
+    </select>
+    <select id="getUserOrgList" resultType="String">
+        select DISTINCT (case when organization_standard is not null then organization_standard when organization_standard is null then organization end) from user
+    </select>
+    <select id="getGrants" resultType="int">
+        select count(DISTINCT prj.grant_ID) as projects from project p,pro_grants pro,prj_grants prj
+		where prj.grants_id=pro.grants_id and pro.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2)
+    </select>
+    <select id="getAgencys" resultType="int">
+        select count(DISTINCT prj.agency) as projects from project p,pro_grants pro,prj_grants prj
+        where prj.grants_id=pro.grants_id and pro.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2)
+    </select>
+    <select id="getArticleCounts" resultType="int">
+		SELECT count(DISTINCT article_title) FROM publication a WHERE a.gsa_linked>0
+    </select>
+    <select id="getJournalCounts" resultType="int">
+		select count(id) from journal where is_used=1
+    </select>
+    <select id="selectCraByAccession" resultMap="CraDownLoad">
+				SELECT
+			a.accession,CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",a.accession) as craUrl,a.title,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as downloadSize
+		FROM
+			cra a
+		LEFT JOIN
+			run_data_file b ON b.cra_id=a.cra_id and b.status=10
+		WHERE
+			a.accession = #{accession}
+    </select>
+    <select id="selectCraByProAccession" resultMap="CraDownLoad">
+		SELECT
+			a.accession,CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",a.accession) as craUrl,a.title,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as downloadSize
+		FROM
+			project c
+		LEFT JOIN
+			run_data_file b ON b.prj_id=c.prj_id and b.status=10
+		LEFT JOIN
+			cra a ON a.cra_id=b.cra_id
+		WHERE
+			c.accession = #{accession}
+    </select>
+    <select id="selectMaxPb"  resultType="int">
+		select  max(a.maxPb) as max from (select sum(DISTINCT file_size) as maxPb from date_file_size group by date order by sum(file_size) desc,date desc) a
+	</select>
+    <select id="selectAllDate"  resultType="DateFileSize">
+		select date,sum(DISTINCT file_size) as fileSize from date_file_size group by date
+	</select>
 </mapper>

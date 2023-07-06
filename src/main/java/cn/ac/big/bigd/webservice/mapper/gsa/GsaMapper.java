@@ -18,4 +18,18 @@ public interface GsaMapper {
     List<Integer> getPrjIdList(String fundString);
     String getPrjAcc(String fundString);
     List<Fund> getFundProAcc(String accession);
+    Double getFastqAchivedData();
+    Double getOtherAchivedData();
+    Double getFastqPubData();
+    Double getOtherPubData();
+    List<String> getUserList();
+    List<String> getUserOrgList();
+    int getGrants();
+    int getAgencys();
+    int getArticleCounts();
+    int getJournalCounts();
+    CraDownLoad selectCraByAccession(String accession);
+    CraDownLoad selectCraByProAccession(String accession);
+    int selectMaxPb();
+    List<DateFileSize> selectAllDate();
 }

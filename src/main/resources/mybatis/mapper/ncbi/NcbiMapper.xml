@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ac.big.bigd.webservice.mapper.ncbi.NcbiMapper">
+
+
+
+    <select id="selectMaxPb"  resultType="int">
+		select sum(run_file_size)/(1024*1024*1024*1024*1024) from run_data_file
+	</select>
+
+    <select id="getFileSizeByDate" parameterType="hashMap" resultType="Double">
+        select IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0)
+        from run_data_file rdf  where rdf.job_date BETWEEN #{start} and #{end}
+    </select>
+
+</mapper>

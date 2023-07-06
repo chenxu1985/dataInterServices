@@ -101,6 +101,13 @@
         <result column="encodingFormat" property="encodingFormat" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <resultMap id="Share" type="cn.ac.big.bigd.webservice.model.cncb.Share">
+        <result column="accession" property="accession" jdbcType="VARCHAR"/>
+        <result column="hraUrl" property="hraUrl" jdbcType="VARCHAR"/>
+        <result column="hraTitle" property="hraTitle" jdbcType="VARCHAR"/>
+        <result column="passCnt" property="passCnt" jdbcType="INTEGER"/>
+    </resultMap>
+
     <select id="getUnSynchronizationStudys" parameterType="Integer" resultMap="Study">
         select st.*,u.user_id,u.first_name as uFirstName,u.middle_name as uMiddleName,u.last_name as uLastName,u.email as uEmail,u.organization as uOrganization,u.cas_user_id as uCasId
         ,u.department as uDepartment,u.phone as uPhone,u.fax as uFax,u.street as uStreet,u.city as uCity,u.state as uState,u.postal_code as uPostalCode,u.country_id as uCountryId
@@ -142,5 +149,28 @@
         "open" as accessRestrictions,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size) as fileSize,rdt.run_data_type_name as encodingFormat
         from study s,user u,run_data_file rdf,run_data_type rdt
         where  u.user_id=s.user_id and rdt.run_data_type_id=rdf.run_data_type_id and rdf.study_id=s.study_id and s.accession=#{accession} and s.status=3
+    </select>
+    <select id="getFastqAchivedData" resultType="double">
+        SELECT IFNULL(sum(rdf.run_file_size)/(281926058404.1026*1024),0) as fastqPb FROM run_data_file rdf WHERE rdf.status=10 AND (rdf.run_data_type_id =1 or rdf.run_data_type_id is null ) ;
+    </select>
+    <select id="getOtherAchivedData" resultType="double">
+        SELECT IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0) as otherPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.run_data_type_id !=1;
+    </select>
+    <select id="getFastqPubData" resultType="double">
+        SELECT IFNULL(sum(rdf.run_file_size)/(281926058404.1026*1024),0) as fastqPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.release_state=2 AND (rdf.run_data_type_id =1 or rdf.run_data_type_id is null ) ;
+    </select>
+    <select id="getOtherPubData" resultType="double">
+        SELECT IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0) as otherPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.release_state=2 and rdf.run_data_type_id !=1;
+    </select>
+    <select id="getUserList" resultType="String">
+        select DISTINCT cas_user_id from user where is_deleted=0 and is_active=1
+    </select>
+    <select id="getUserOrgList" resultType="String">
+        select DISTINCT organization from user
+    </select>
+    <select id="getShareList" resultMap="Share">
+        select accession as accession,CONCAT("https://ngdc.cncb.ac.cn/gsa-human/browse/",accession) as hraUrl ,title as hraTitle,apporved_count as passCnt from  view_study_browse where is_controlled_access=1
+        order by rating desc,apporved_count desc
+        limit 0,10
     </select>
 </mapper>
