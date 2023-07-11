@@ -142,6 +142,7 @@ public class CncbController {
                 gsaDownloads.add(summary);
             }else{//Project accession
                 CraDownLoad cra = this.gsaMapper.selectCraByProAccession(summary.getAccession());
+                summary.setAccession(cra.getAccession());
                 summary.setCraUrl("https://ngdc.cncb.ac.cn/gsa/browse/"+cra.getAccession());
                 summary.setDataDes(cra.getTitle());
                 projectDownloads.add(summary);
