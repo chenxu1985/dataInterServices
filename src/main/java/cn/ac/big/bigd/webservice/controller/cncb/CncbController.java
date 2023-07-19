@@ -1,5 +1,6 @@
 package cn.ac.big.bigd.webservice.controller.cncb;
 
+import cn.ac.big.bigd.webservice.mapper.ftp.FtpInfoMapper;
 import cn.ac.big.bigd.webservice.mapper.gsa.GsaMapper;
 import cn.ac.big.bigd.webservice.mapper.human.StudyMapper;
 import cn.ac.big.bigd.webservice.mapper.ncbi.NcbiMapper;
@@ -41,6 +42,9 @@ public class CncbController {
 
     @Autowired
     private NcbiMapper ncbiMapper;
+
+    @Autowired
+    private FtpInfoMapper ftpInfoMapper;
 
     @RequestMapping(value = "/getServicesData")
     public ServicesData getData(HttpServletResponse httpServletResponse) throws Exception {
@@ -102,7 +106,7 @@ public class CncbController {
         servicesData.setVisPersonCnt(visPersonCnt);
         servicesData.setVisCnt(visCnt);
         //共享下载
-        List<DownLoad> downLoadList = getDownLoadList();
+        List<DownLoad> downLoadList = getDownLoadCountsList();
         servicesData.setDownLoadList(downLoadList);
         //共享分享
         List<Share> shareList = this.studyMapper.getShareList();
@@ -114,6 +118,36 @@ public class CncbController {
         IndexLine lineInsdc = getLineInsdc();
         servicesData.setLineInsdc(lineInsdc);
         return servicesData;
+    }
+    public List<DownLoad> getDownLoadCountsList(){
+        List<DownLoad> downloads = new ArrayList<DownLoad>();
+
+        List<DownLoad> downloadsCra = this.ftpInfoMapper.getDownLoadCountCra();
+        List<DownLoad> downloadsPrj = this.ftpInfoMapper.getDownLoadCountPrj();
+        downloads.addAll(downloadsCra);
+        downloads.addAll(downloadsPrj);
+
+        List<DownLoad> gsaDownloads = new ArrayList<DownLoad>();
+        List<DownLoad> projectDownloads = new ArrayList<DownLoad>();
+        for(DownLoad summary: downloads){
+            if(summary.getAccession().contains("CRA")){//CRA accession, get run_file_size and release_date
+                CraDownLoad cra = this.gsaMapper.selectCraByAccession(summary.getAccession());
+                if(cra.getStatus()==5){
+                    continue;
+                }
+                summary.setCraUrl("https://ngdc.cncb.ac.cn/gsa/browse/"+cra.getAccession());
+                summary.setDataDes(cra.getTitle());
+                gsaDownloads.add(summary);
+            }else{//Project accession
+                CraDownLoad cra = this.gsaMapper.selectCraByProAccession(summary.getAccession());
+                summary.setAccession(cra.getAccession());
+                summary.setCraUrl("https://ngdc.cncb.ac.cn/gsa/browse/"+cra.getAccession());
+                summary.setDataDes(cra.getTitle());
+                projectDownloads.add(summary);
+            }
+        }
+        List<DownLoad> top20Downloads = getTop10Downloads(gsaDownloads,projectDownloads);
+        return top20Downloads;
     }
     public List<DownLoad> getDownLoadList(){
         List<DownLoad> downloads = new ArrayList<DownLoad>();
@@ -244,7 +278,7 @@ public class CncbController {
                 dateList.add(String.format("%tY-%tm-01", start, start));
                 start.add(Calendar.MONTH, 1);
             }
-            dateList.add(String.format("%tY-%tm-01", start, start));
+            //dateList.add(String.format("%tY-%tm-01", start, start));
         } catch (ParseException e) {
             e.printStackTrace();
         }

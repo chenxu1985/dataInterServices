@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ac.big.bigd.webservice.mapper.ftp.FtpInfoMapper">
+    <resultMap id="DownLoad" type="cn.ac.big.bigd.webservice.model.cncb.DownLoad">
+        <result column="accession" property="accession" jdbcType="VARCHAR"/>
+        <result column="craUrl" property="craUrl" jdbcType="VARCHAR"/>
+        <result column="dataDes" property="dataDes" jdbcType="VARCHAR"/>
+        <result column="downloadSize" property="downloadSize" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="getDownLoadCountCra"  resultMap="DownLoad" useCache="true">
+        select accession,	count(ds_id) as downloadSize from gsa_data_statistics_perday
+        where accession like "CRA%"
+        group by accession order by downloadSize desc
+        limit 0,20;
+    </select>
+    <select id="getDownLoadCountPrj"  resultMap="DownLoad" useCache="true">
+        select accession,	count(ds_id) as downloadSize from gsa_data_statistics_perday
+        where accession like "PRJ%"
+        group by accession order by downloadSize desc
+        limit 0,20;
+    </select>
+</mapper>
