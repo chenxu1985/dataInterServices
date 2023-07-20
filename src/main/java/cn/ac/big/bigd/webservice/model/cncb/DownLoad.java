@@ -1,10 +1,19 @@
 package cn.ac.big.bigd.webservice.model.cncb;
 
 public class DownLoad {
+    private int index;
     private String accession;
     private String craUrl;
     private String dataDes;
     private Long downloadSize;
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
     public String getAccession() {
         return accession;

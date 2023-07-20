@@ -1,10 +1,20 @@
 package cn.ac.big.bigd.webservice.model.cncb;
 
 public class Share {
+    private int index;
     private String accession;
     private String hraUrl;
     private String hraTitle;
     private int passCnt;
+
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
     public String getAccession() {
         return accession;

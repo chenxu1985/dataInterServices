@@ -110,6 +110,11 @@ public class CncbController {
         servicesData.setDownLoadList(downLoadList);
         //共享分享
         List<Share> shareList = this.studyMapper.getShareList();
+        int i = 1;
+        for(Share d:shareList){
+            d.setIndex(i);
+            i++;
+        }
         servicesData.setShareList(shareList);
         //GSA数据增长图
         IndexLine lineGsa = getLineGsa();
@@ -237,6 +242,11 @@ public class CncbController {
 //            System.out.println("merge size:" + merge.size());
             top20Downloads = merge.subList(0, 10);
         }
+        int i = 1;
+        for(DownLoad d:top20Downloads){
+            d.setIndex(i);
+            i++;
+        }
         return top20Downloads;
     }
 
@@ -272,11 +282,16 @@ public class CncbController {
         Calendar end = Calendar.getInstance();
         try {
             start.setTime(f2.parse("2022-07-01"));
-            end.setTime(new Date());
+            Date to = new Date();
+            String toStr = f2.format(to);
+            end.setTime(f2.parse(toStr));
 
             while (start.before(end)) {
                 dateList.add(String.format("%tY-%tm-01", start, start));
                 start.add(Calendar.MONTH, 1);
+            }
+            if(!start.equals(end)){
+                dateList.add(String.format("%tY-%tm-%td", end, end,end));
             }
             //dateList.add(String.format("%tY-%tm-01", start, start));
         } catch (ParseException e) {
