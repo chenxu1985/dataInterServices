@@ -6,6 +6,7 @@ public class CraDownLoad {
     private int craId;
     private String accession;
     private String title;
+    private String desc;
     private int status;
 
     public int getCraId() {
@@ -30,6 +31,14 @@ public class CraDownLoad {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public int getStatus() {

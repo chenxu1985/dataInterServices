@@ -104,6 +104,7 @@
         <id column="cra_id" property="craId" jdbcType="INTEGER"/>
         <result column="accession" property="accession" jdbcType="VARCHAR"/>
         <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="description" property="desc" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="INTEGER"/>
     </resultMap>
 
@@ -265,7 +266,7 @@
     </select>
     <select id="selectCraByAccession" resultMap="CraDownLoad">
 				SELECT
-			a.accession,CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",a.accession) as craUrl,a.title,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as downloadSize
+			a.accession,CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",a.accession) as craUrl,a.title,a.description,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as downloadSize
 		FROM
 			cra a
 		LEFT JOIN
@@ -275,7 +276,7 @@
     </select>
     <select id="selectCraByProAccession" resultMap="CraDownLoad">
 		SELECT
-			a.accession,CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",a.accession) as craUrl,a.title,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as downloadSize
+			a.accession,CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",a.accession) as craUrl,a.title,a.description,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as downloadSize
 		FROM
 			project c
 		LEFT JOIN

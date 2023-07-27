@@ -141,13 +141,25 @@ public class CncbController {
                     continue;
                 }
                 summary.setCraUrl("https://ngdc.cncb.ac.cn/gsa/browse/"+cra.getAccession());
-                summary.setDataDes(cra.getTitle());
+                String desc = "";
+                if(cra.getDesc()!=null){
+                    desc = cra.getDesc();
+                } else {
+                    desc = cra.getTitle();
+                }
+                summary.setDataDes(desc);
                 gsaDownloads.add(summary);
             }else{//Project accession
                 CraDownLoad cra = this.gsaMapper.selectCraByProAccession(summary.getAccession());
                 summary.setAccession(cra.getAccession());
                 summary.setCraUrl("https://ngdc.cncb.ac.cn/gsa/browse/"+cra.getAccession());
-                summary.setDataDes(cra.getTitle());
+                String desc = "";
+                if(cra.getDesc()!=null){
+                    desc = cra.getDesc();
+                } else {
+                    desc = cra.getTitle();
+                }
+                summary.setDataDes(desc);
                 projectDownloads.add(summary);
             }
         }
