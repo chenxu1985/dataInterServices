@@ -304,6 +304,8 @@ public class CncbController {
             }
             if(!start.equals(end)){
                 dateList.add(String.format("%tY-%tm-%td", end, end,end));
+            } else {
+                dateList.add(String.format("%tY-%tm-01", start, start));
             }
             //dateList.add(String.format("%tY-%tm-01", start, start));
         } catch (ParseException e) {
