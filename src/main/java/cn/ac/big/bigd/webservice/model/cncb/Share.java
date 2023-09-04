@@ -6,6 +6,9 @@ public class Share {
     private String hraUrl;
     private String hraTitle;
     private int passCnt;
+    private int requestCnt;
+    private int effCnt;
+    private int rating;
 
 
     public int getIndex() {
@@ -46,5 +49,29 @@ public class Share {
 
     public void setPassCnt(int passCnt) {
         this.passCnt = passCnt;
+    }
+
+    public int getRequestCnt() {
+        return requestCnt;
+    }
+
+    public void setRequestCnt(int requestCnt) {
+        this.requestCnt = requestCnt;
+    }
+
+    public int getEffCnt() {
+        return effCnt;
+    }
+
+    public void setEffCnt(int effCnt) {
+        this.effCnt = effCnt;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 }

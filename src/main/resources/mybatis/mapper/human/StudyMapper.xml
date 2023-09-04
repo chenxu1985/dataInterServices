@@ -106,6 +106,9 @@
         <result column="hraUrl" property="hraUrl" jdbcType="VARCHAR"/>
         <result column="hraTitle" property="hraTitle" jdbcType="VARCHAR"/>
         <result column="passCnt" property="passCnt" jdbcType="INTEGER"/>
+        <result column="requestCnt" property="requestCnt" jdbcType="INTEGER"/>
+        <result column="effCnt" property="effCnt" jdbcType="INTEGER"/>
+        <result column="rating" property="rating" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="getUnSynchronizationStudys" parameterType="Integer" resultMap="Study">
@@ -169,7 +172,9 @@
         select DISTINCT organization from user
     </select>
     <select id="getShareList" resultMap="Share">
-        select accession as accession,CONCAT("https://ngdc.cncb.ac.cn/gsa-human/browse/",accession) as hraUrl ,title as hraTitle,apporved_count as passCnt from  view_study_browse where is_controlled_access=1
+        select accession as accession,CONCAT("https://ngdc.cncb.ac.cn/gsa-human/browse/",accession) as hraUrl
+        ,title as hraTitle,apporved_count as passCnt ,request_count as requestCnt,eff_count as effCnt,rating-2 as rating
+        from  view_study_browse where is_controlled_access=1
         order by rating desc,apporved_count desc
         limit 0,10
     </select>
