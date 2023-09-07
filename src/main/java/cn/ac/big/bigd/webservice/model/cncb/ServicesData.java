@@ -17,6 +17,9 @@ public class ServicesData {
     private List<Share> shareList;
     private IndexLine lineGsa;
     private IndexLine lineInsdc;
+    private String uniqueVisitors;
+    private String totalRequests;
+
     public String getAchivedData() {
         return achivedData;
     }
@@ -127,5 +130,21 @@ public class ServicesData {
 
     public void setLineInsdc(IndexLine lineInsdc) {
         this.lineInsdc = lineInsdc;
+    }
+
+    public String getUniqueVisitors() {
+        return uniqueVisitors;
+    }
+
+    public void setUniqueVisitors(String uniqueVisitors) {
+        this.uniqueVisitors = uniqueVisitors;
+    }
+
+    public String getTotalRequests() {
+        return totalRequests;
+    }
+
+    public void setTotalRequests(String totalRequests) {
+        this.totalRequests = totalRequests;
     }
 }

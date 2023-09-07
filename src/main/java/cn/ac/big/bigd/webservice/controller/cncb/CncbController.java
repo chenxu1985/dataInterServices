@@ -13,6 +13,7 @@ import cn.ac.big.bigd.webservice.model.gsa.CraDownLoad;
 import cn.ac.big.bigd.webservice.model.gsa.DataList;
 import cn.ac.big.bigd.webservice.model.gsa.DateFileSize;
 import cn.ac.big.bigd.webservice.utility.HttpRequestUtil;
+import cn.ac.big.bigd.webservice.utility.SSHUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import net.sf.json.JSONArray;
@@ -22,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -122,6 +127,51 @@ public class CncbController {
         //Insdc数据增长图
         IndexLine lineInsdc = getLineInsdc();
         servicesData.setLineInsdc(lineInsdc);
+        SSHUtils ssh = new SSHUtils("192.168.164.20", "gsagroup", "gsa@big35$2019!",22);
+        String cmd = "curl http://192.168.164.109/report/total/total.html  -s |grep -o -P 'unique_visitors.{0,27}'|grep -Eo '[0-9]{1,}'  > /webdb/gsagroup/webApplications/dataInterServices/unique";
+        ssh.execCommandByJSch(cmd);
+        String cmd2 = "curl http://192.168.164.109/report/total/total.html  -s |grep -o -P 'total_requests.{0,31}'|grep -Eo '[0-9]{1,}'  > /webdb/gsagroup/webApplications/dataInterServices/total";
+        ssh.execCommandByJSch(cmd2);
+        ssh.closeSession();
+
+        File uniqueFile = new File("/webdb/gsagroup/webApplications/dataInterServices/unique");
+        InputStreamReader uniqueRead = null;//考虑到编码格式
+        File totalFile = new File("/webdb/gsagroup/webApplications/dataInterServices/total");
+        InputStreamReader totalRead = null;//考虑到编码格式
+        String unique = "";
+        String total = "";
+
+        try {
+            uniqueRead = new InputStreamReader(new FileInputStream(uniqueFile),"GBK");
+            BufferedReader uniqueBuffered = new BufferedReader(uniqueRead);
+            String uniqueTxt = null;
+
+            while((uniqueTxt = uniqueBuffered.readLine()) != null){
+                //解析文件具体路径
+                String str =  uniqueTxt;
+                unique = str;
+            }
+            uniqueRead.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            totalRead = new InputStreamReader(new FileInputStream(totalFile),"GBK");
+            BufferedReader totalBuffered = new BufferedReader(totalRead);
+            String totalTxt = null;
+
+            while((totalTxt = totalBuffered.readLine()) != null){
+                //解析文件具体路径
+                String str =  totalTxt;
+                total = str;
+            }
+            totalRead.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        servicesData.setUniqueVisitors(unique);
+        servicesData.setTotalRequests(total);
         return servicesData;
     }
     public List<DownLoad> getDownLoadCountsList(){
