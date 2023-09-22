@@ -178,4 +178,12 @@
         order by rating desc,apporved_count desc
         limit 0,10
     </select>
+
+    <select id="getStudyCountByPrjIdNoDelete" resultType="int" parameterType="int">
+        select count(study_id) from study where status!=5 and prj_id=#{prjId}
+    </select>
+    <select id="getStudyCountByBioSampleIdNoDelete" resultType="int" parameterType="int">
+--         select count(study_id) from study where status!=5 and prj_id=#{prjId}
+    </select>
+
 </mapper>

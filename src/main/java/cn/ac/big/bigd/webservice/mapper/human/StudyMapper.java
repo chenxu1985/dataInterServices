@@ -22,4 +22,7 @@ public interface StudyMapper {
     List<String> getUserList();
     List<String> getUserOrgList();
     List<Share> getShareList();
+
+    int getStudyCountByPrjIdNoDelete(int prjId);
+    int getStudyCountByBioSampleIdNoDelete(int sampleId);
 }

@@ -30,4 +30,10 @@ public interface SampleMapper {
     int reviewSample(SampleReview sample);
 
     int saveSampleByHuman(SampleSynchronization sample);
+
+    int getSampleCountByPrjIdNoDelete(int prjId);
+
+    String getSampleAccessionBySubmissionId(String submissionId);
+    List<String> getSampleAccessionListBySubmissionId(String submissionId);
+    String getSampleAccessionBySampleId(int sampleId);
 }

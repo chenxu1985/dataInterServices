@@ -32,4 +32,13 @@ public interface GsaMapper {
     CraDownLoad selectCraByProAccession(String accession);
     int selectMaxPb();
     List<DateFileSize> selectAllDate();
+
+    int getCraCountByPrjIdNoDelete(int prjId);
+    int getCraCountBySubmissionIdNoDelete(String submissionId);
+    int getHumanCountBySubmissionIdNoDelete(String submissionId);
+
+    int getCraCountBySampleIdNoDelete(int sampleId);
+    int getHumanCountBySampleIdNoDelete(int sampleId);
+
+
 }

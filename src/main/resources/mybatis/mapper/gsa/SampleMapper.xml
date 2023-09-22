@@ -331,4 +331,16 @@
         #{urlInOtherDb,jdbcType=VARCHAR}
         )
     </insert>
+    <select id="getSampleCountByPrjIdNoDelete" parameterType="int" resultType="int">
+        select count(sample_id) from sample where status!=5 and prj_id=#{prjId}
+    </select>
+    <select id="getSampleAccessionBySubmissionId" parameterType="String" resultType="String">
+        select  GROUP_CONCAT(DISTINCT accession) from sample where submissionId=#{submissionId} and `status`!=5 group by submissionId
+    </select>
+    <select id="getSampleAccessionListBySubmissionId" parameterType="String" resultType="String">
+        select  accession from sample where submissionId=#{submissionId} and `status`!=5 group by submissionId
+    </select>
+    <select id="getSampleAccessionBySampleId" parameterType="int" resultType="String">
+        select  accession from sample where sample_id=#{sampleId} and `status`!=5
+    </select>
 </mapper>

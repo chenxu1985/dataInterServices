@@ -292,4 +292,20 @@
     <select id="selectAllDate"  resultType="DateFileSize">
 		select date,sum(DISTINCT file_size) as fileSize from date_file_size group by date
 	</select>
+    <select id="getCraCountByPrjIdNoDelete" resultType="int" parameterType="int">
+        select count(cra_id) from cra where status!=5 and prj_id=#{prjId}
+    </select>
+    <select id="getCraCountBySubmissionIdNoDelete" resultType="int" parameterType="String">
+        SELECT count(e.exp_id) FROM experiment e,sample s WHERE s.sample_id=e.sample_id and s.submissionId=#{submissionId} AND s.status != 5 and e.`status`!=5
+    </select>
+    <select id="getHumanCountBySubmissionIdNoDelete" resultType="int" parameterType="String">
+        select count(synchronization_accession) from sample where submissionId=#{submissionId} and `status`!=5
+    </select>
+
+    <select id="getCraCountBySampleIdNoDelete" resultType="int" parameterType="int">
+        SELECT count(e.exp_id) FROM experiment e,sample s WHERE s.sample_id=e.sample_id and s.sample_id=#{sampleId} AND s.status != 5 and e.`status`!=5
+    </select>
+    <select id="getHumanCountBySampleIdNoDelete" resultType="int" parameterType="int">
+        select count(synchronization_accession) from sample where sample_id=#{sampleId} and `status`!=5
+    </select>
 </mapper>

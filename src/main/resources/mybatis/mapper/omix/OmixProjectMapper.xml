@@ -11,5 +11,9 @@
         select o.prj_accession,GROUP_CONCAT(DISTINCT taxon.name_txt) as taxName from omix o,taxon_name taxon
         where (o.`status`=1 or o.`status`=2 or o.`status`=5) and taxon.tax_id=o.tax_id and taxon.name_class='scientific name' and user_id not in (1,2) and o.prj_id=#{prjId}
     </select>
+    <select id="getOmixCountByPrjIdNoDelete" parameterType="Integer" resultType="Integer">
+        select COUNT(omix_id) from omix
+        where user_id NOT IN ( 1, 2, 313, 415 ) and (is_deleted is null or is_deleted != 1) and is_review = 1 and prj_id = #{prjId}
+    </select>
 
 </mapper>
