@@ -57,8 +57,11 @@ public class GSASampleController {
         resultGwh  = HttpRequestUtil.doHttpGetResponseJson(gwhUrl, null);
         if(resultGwh!=""&&resultGwh!=null&&!resultGwh.equals("")){
             int gwhCount = Integer.parseInt(resultGwh);
-            System.out.println("gwhCount:"+gwhCount);
-            if(gwhCount!=0){
+            if(gwhCount==1){
+                System.out.println("gwhCount:0");
+            }
+            if(gwhCount!=1){
+                System.out.println("gwhCount:1");
                 return 1;
             }
         }else {
@@ -117,8 +120,11 @@ public class GSASampleController {
         resultGwh  = HttpRequestUtil.doHttpGetResponseJson(gwhUrl, null);
         if(resultGwh!=""&&resultGwh!=null&&!resultGwh.equals("")){
             int gwhCount = Integer.parseInt(resultGwh);
-            System.out.println("gwhCount:"+gwhCount);
-            if(gwhCount!=0){
+            if(gwhCount==1){
+                System.out.println("gwhCount:0");
+            }
+            if(gwhCount!=1){
+                System.out.println("gwhCount:1");
                 return 1;
             }
         }else {
