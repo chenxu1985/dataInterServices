@@ -12,5 +12,9 @@
         select IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0)
         from run_data_file rdf  where rdf.job_date BETWEEN #{start} and #{end}
     </select>
+    <select id="getFileSizeAll"  resultType="Double">
+        select IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0)
+        from run_data_file rdf
+    </select>
 
 </mapper>

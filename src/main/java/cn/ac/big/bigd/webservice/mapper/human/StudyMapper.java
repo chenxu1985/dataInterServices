@@ -25,4 +25,11 @@ public interface StudyMapper {
 
     int getStudyCountByPrjIdNoDelete(int prjId);
     int getStudyCountByBioSampleIdNoDelete(int sampleId);
+
+    int getPatientIndividuals();
+    int getNaturalIndividuals();
+
+    int getHraCounts();
+
+    double getHraFileSize();
 }

@@ -1,6 +1,7 @@
 package cn.ac.big.bigd.webservice.mapper.gsa;
 
 import cn.ac.big.bigd.webservice.model.gsa.*;
+import cn.ac.big.bigd.webservice.model.gsa.SampleTypeCounts;
 
 import java.util.Map;
 
@@ -40,5 +41,8 @@ public interface GsaMapper {
     int getCraCountBySampleIdNoDelete(int sampleId);
     int getHumanCountBySampleIdNoDelete(int sampleId);
 
+    List<SampleTypeCounts> getCraCountsBySampleType();
+    List<SampleTypeFileSize> getCraFileSizeBySampleType1();
 
+    List<SampleTypeFileSize> getCraFileSizeBySampleType2();
 }

@@ -186,4 +186,26 @@
 --         select count(study_id) from study where status!=5 and prj_id=#{prjId}
     </select>
 
+    <select id="getPatientIndividuals" resultType="int" >
+        select sum(
+            (select count(distinct i.individual_id) from individual i,study s
+            where s.status=3 and i.status=3 and s.study_id=i.study_id and JSON_EXTRACT(i.attributes,'$.experiment_group')="0" and s.study_type_id=1) +
+            (select count(distinct i.individual_id)  from individual i,study s,study_type_name stn
+            where s.status=3 and i.status=3 and s.study_id=i.study_id and s.study_type_id=2 and stn.study_id=s.study_id and stn.cohort_type=1))
+    </select>
+
+    <select id="getNaturalIndividuals" resultType="int" >
+        select count(distinct i.individual_id) from individual i,study s where s.`status`=3 and i.`status`=3 and s.study_id=i.study_id and s.study_type_id in (1,2,4)
+    </select>
+
+    <select id="getHraCounts" resultType="int" >
+        select count(study_id) from study where `status`=3
+    </select>
+    <select id="getHraFileSize" resultType="double" >
+        select (select IFNULL(sum(rdf.run_file_size)/(281926058404.1026),0) from run_data_file rdf
+                where rdf.`status`=10 and (rdf.run_data_type_id =1 or rdf.run_data_type_id is null)) +
+               (select IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024),0) from run_data_file rdf
+                where rdf.`status`=10 and rdf.run_data_type_id !=1)
+    </select>
+
 </mapper>
