@@ -5,6 +5,8 @@ public class ScreenServicesData {
     private String InsdcData;
     private int patientIndividuals;
     private int naturalIndividuals;
+    private int prjCnt;
+    private int citeCnt;
 
     private DataComposition dataComposition;
 
@@ -46,5 +48,21 @@ public class ScreenServicesData {
 
     public void setDataComposition(DataComposition dataComposition) {
         this.dataComposition = dataComposition;
+    }
+
+    public int getPrjCnt() {
+        return prjCnt;
+    }
+
+    public void setPrjCnt(int prjCnt) {
+        this.prjCnt = prjCnt;
+    }
+
+    public int getCiteCnt() {
+        return citeCnt;
+    }
+
+    public void setCiteCnt(int citeCnt) {
+        this.citeCnt = citeCnt;
     }
 }

@@ -147,8 +147,13 @@ public class CncbScreenController {
         dataComposition.setHumanFileSize(humanFileSize);
         dataComposition.setPlantFileSize(plantFileSize);
         servicesData.setDataComposition(dataComposition);
-        //double zabbix7 = this.zabbixMapper.getValue7();
-//        servicesData.setZabbix(zabbix7);
+        //资助项目
+        int prjCnt = this.gsaMapper.getGrants();
+        int orgTypeCnt = this.gsaMapper.getAgencys();
+        servicesData.setPrjCnt(prjCnt);
+        //文章期刊
+        int citeCnt = this.gsaMapper.getArticleCounts();
+        servicesData.setCiteCnt(citeCnt);
         return servicesData;
     }
 
