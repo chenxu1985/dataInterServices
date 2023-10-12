@@ -4,12 +4,14 @@ import cn.ac.big.bigd.webservice.mapper.gsa.GsaMapper;
 import cn.ac.big.bigd.webservice.mapper.human.StudyMapper;
 import cn.ac.big.bigd.webservice.mapper.ncbi.NcbiMapper;
 import cn.ac.big.bigd.webservice.mapper.zabbix.ZabbixMapper;
+import cn.ac.big.bigd.webservice.model.cncb.DownLoad;
 import cn.ac.big.bigd.webservice.model.gsa.SampleTypeFileSize;
 import cn.ac.big.bigd.webservice.model.screen.*;
 import cn.ac.big.bigd.webservice.model.gsa.SampleTypeCounts;
 import cn.ac.big.bigd.webservice.model.zabbix.*;
 import cn.ac.big.bigd.webservice.utility.HttpRequestUtil;
 import com.alibaba.fastjson.JSONObject;
+import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -138,6 +140,40 @@ public class CncbScreenController {
         animalFileSize = animalFileSize + animals_size_sum;
         humanFileSize = humanFileSize + human_size_sum;
         plantFileSize = plantFileSize + plants_size_sum;
+
+        String gvmUrl = "https://ngdc.cncb.ac.cn/gvm/ajax/ajaxGetGVMStatBySpeciesType";
+        String resultGvm = "";
+        resultGvm  = HttpRequestUtil.doHttpGetResponseJson(gvmUrl, null);
+        JSONObject jsonObjectGvm = new JSONObject();
+        jsonObjectGvm = JSONObject.parseObject(resultGvm);
+        net.sf.json.JSONArray jsonArray = JSONArray.fromObject(jsonObjectGvm.get("projectStatBeanList"));
+        Iterator<Object> it = jsonArray.iterator();
+        List<GvmDataComposition> gvmDataCompositions = new ArrayList<GvmDataComposition>();
+        while(it.hasNext()){
+            net.sf.json.JSONObject obj = (net.sf.json.JSONObject)it.next();
+            GvmDataComposition gvmDataComposition = (GvmDataComposition) net.sf.json.JSONObject.toBean(obj, GvmDataComposition.class);
+            gvmDataCompositions.add(gvmDataComposition);
+        }
+
+        for(GvmDataComposition gv:gvmDataCompositions){
+            int type = gv.getType();
+            int gvPrjCount = gv.getPrjCount();
+            double size = gv.getFileSize();
+            if(type==1){
+                humanDataSets = humanDataSets + gvPrjCount;
+                humanFileSize = humanFileSize + size;
+            } else if(type==2){
+                animalDataSets = animalDataSets + gvPrjCount;
+                animalFileSize = animalFileSize + size;
+            } else if(type==3){
+                plantDataSets = plantDataSets + gvPrjCount;
+                plantFileSize = plantFileSize + size;
+            } else if(type==4){
+                microbeDataSets = microbeDataSets + gvPrjCount;
+                microbeFileSize = plantFileSize + size;
+            }
+        }
+
         dataComposition.setMicrobeDataSets(microbeDataSets);
         dataComposition.setAnimalDataSets(animalDataSets);
         dataComposition.setHumanDataSets(humanDataSets);
