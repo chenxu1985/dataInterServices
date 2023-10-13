@@ -1,16 +1,9 @@
 package cn.ac.big.bigd.webservice.model.zabbix;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.util.Date;
-
-public class TrafficHistoryDetail {
+public class TrafficAvgDetail {
     private int itemid;
-
     private String time;
     private double avg;
-//    private double valueAvg;
-//    private double valueMax;
 
     public int getItemid() {
         return itemid;

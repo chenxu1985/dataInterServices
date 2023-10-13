@@ -9,16 +9,20 @@
     </resultMap>
     <resultMap id="TrafficHistoryDetail" type="TrafficHistoryDetail">
         <result column="itemid" property="itemid" jdbcType="INTEGER" />
-        <result column="time" property="time" jdbcType="DATE" />
-        <result column="value_min" property="valueMin" jdbcType="DOUBLE" />
-        <result column="value_avg" property="valueAvg" jdbcType="DOUBLE" />
-        <result column="value_max" property="valueMax" jdbcType="DOUBLE" />
+        <result column="time" property="time" jdbcType="VARCHAR" />
+        <result column="avg" property="avg" jdbcType="DOUBLE" />
     </resultMap>
     <resultMap id="Traffic" type="Traffic">
         <result column="itemid" property="itemid" jdbcType="INTEGER" />
         <result column="time" property="time" jdbcType="DATE" />
         <result column="value" property="value" jdbcType="DOUBLE" />
     </resultMap>
+    <resultMap id="TrafficAvgDetail" type="TrafficAvgDetail">
+        <result column="itemid" property="itemid" jdbcType="INTEGER" />
+        <result column="time" property="time" jdbcType="VARCHAR" />
+        <result column="avg" property="avg" jdbcType="DOUBLE" />
+    </resultMap>
+
     <select id="getUploadRealTime"  resultType="Real">
         select itemid, from_unixtime(clock) as time, value, `value`*0.000000001 as gbps from history_uint where itemid = 43203 order by clock desc limit 1;
 	</select>
@@ -33,12 +37,12 @@
         select itemid, from_unixtime(clock) as time,value from history_uint where itemid=43204;
     </select>
     <select id="getUploadTrafficHistoryList"  resultType="TrafficHistoryDetail" parameterType="int">
-        select itemid, from_unixtime(clock) as time,value_min,value_avg,value_max  from trends_uint where itemid=43203
-        and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL #{day} DAY)) and clock &lt;= NOW();
+        select itemid, DATE_FORMAT(FROM_UNIXTIME(clock), '%m-%d') as time, AVG(value_avg)*0.000000001 as avg from trends_uint where itemid=43203
+        and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL #{day} DAY)) and clock &lt;= NOW() group by time;
     </select>
     <select id="getDownLoadTrafficHistoryList"  resultType="TrafficHistoryDetail" parameterType="int">
-        select itemid, from_unixtime(clock) as time, value_min, value_avg, value_max from trends_uint where itemid=43204
-        and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL #{day} DAY)) and clock &lt;= NOW();
+        select itemid, DATE_FORMAT(FROM_UNIXTIME(clock), '%m-%d') as time, AVG(value_avg)*0.000000001 as avg from trends_uint where itemid=43204
+        and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL #{day} DAY)) and clock &lt;= NOW() group by time;
     </select>
     <select id="getUploadTraffic"  resultType="double" parameterType="int">
         select sum(value_avg*3600)/8/1024/1024/1024 from trends_uint where itemid=43203
@@ -48,4 +52,13 @@
         select sum(value_avg*3600)/8/1024/1024/1024 from trends_uint where itemid=43204
         and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL #{day} DAY)) and clock &lt;= NOW();
     </select>
+    <select id="getUploadTrafficAvg"  resultType="TrafficAvgDetail">
+        select itemid, TRIM(LEADING '0' FROM DATE_FORMAT(FROM_UNIXTIME(clock), '%m月')) as time, AVG(value_avg)*0.000000001 as avg from trends_uint where itemid=43203
+        and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL 11 MONTH)) and clock  &lt;= NOW() group by time;
+    </select>
+    <select id="getDownLoadTrafficAvg"  resultType="TrafficAvgDetail">
+        select itemid, TRIM(LEADING '0' FROM DATE_FORMAT(FROM_UNIXTIME(clock), '%m月')) as time, AVG(value_avg)*0.000000001 as avg from trends_uint where itemid=43204
+        and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL 11 MONTH)) and clock  &lt;= NOW() group by time;
+    </select>
+
 </mapper>

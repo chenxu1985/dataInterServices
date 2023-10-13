@@ -192,7 +192,9 @@ public class CncbScreenController {
         servicesData.setCiteCnt(citeCnt);
         return servicesData;
     }
-
+    /**
+     * 获取实时速率
+     */
     @RequestMapping(value = "/getRealTime")
     public RealTime getRealTime(HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
@@ -203,7 +205,9 @@ public class CncbScreenController {
         realTime.setDownLoadRealTime(downLoadRealTime);
         return realTime;
     }
-
+    /**
+     * 7天内详情
+     */
     @RequestMapping(value = "/getTrafficDetail")
     public TrafficDetail getTrafficDetail(HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
@@ -214,6 +218,9 @@ public class CncbScreenController {
         trafficDetail.setDownLoad(downLoad);
         return trafficDetail;
     }
+    /**
+     * 历史流量统计
+     */
     @RequestMapping(value = "/getTrafficList/{day}")
     public TrafficHistory getTrafficList(@PathVariable("day") int day,HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
@@ -224,6 +231,9 @@ public class CncbScreenController {
         trafficHistory.setDownLoadTraffic(downLoad);
         return trafficHistory;
     }
+    /**
+     * 历史总流量统计
+     */
     @RequestMapping(value = "/getTrafficAll/{day}")
     public TrafficAll getTrafficAll(@PathVariable("day") int day,HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
@@ -232,6 +242,19 @@ public class CncbScreenController {
         double downLoad = this.zabbixMapper.getDownLoadTraffic(day);
         trafficAll.setUploadTraffic(upload);
         trafficAll.setDownLoadTraffic(downLoad);
+        return trafficAll;
+    }
+    /**
+     * 全年月平均流量
+     */
+    @RequestMapping(value = "/getTrafficAvg")
+    public TrafficAvg getTrafficAvg(HttpServletResponse httpServletResponse) throws Exception {
+        httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
+        TrafficAvg trafficAll = new TrafficAvg();
+        List<TrafficAvgDetail> upload = this.zabbixMapper.getUploadTrafficAvg();
+        List<TrafficAvgDetail> downLoad = this.zabbixMapper.getDownLoadTrafficAvg();
+        trafficAll.setUploadTrafficAvg(upload);
+        trafficAll.setDownLoadTrafficAvg(downLoad);
         return trafficAll;
     }
 }
