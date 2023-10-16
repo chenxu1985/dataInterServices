@@ -68,13 +68,13 @@ public class CncbScreenController {
         double plantFileSize = 0;
         for(SampleTypeCounts typeCounts:sampleTypeCounts){
             int typeId = typeCounts.getSampleTypeId();
-            if(typeId==1){
-                microbeDataSets = typeCounts.getCounts();
-            } else if(typeId==2){
-                animalDataSets = typeCounts.getCounts();
-            } else if(typeId==3){
-                humanDataSets = typeCounts.getCounts();
+            if(typeId==1||typeId==2||typeId==3||typeId==7||typeId==8||typeId==9||typeId==10||typeId==11){
+                microbeDataSets = microbeDataSets + typeCounts.getCounts();
             } else if(typeId==4){
+                animalDataSets = typeCounts.getCounts();
+            } else if(typeId==5){
+                humanDataSets = typeCounts.getCounts();
+            } else if(typeId==6){
                 plantDataSets = typeCounts.getCounts();
             }
         }
@@ -85,8 +85,8 @@ public class CncbScreenController {
         for(SampleTypeFileSize sampleTypeFileSize:sampleTypeFileSize1){
             int type = sampleTypeFileSize.getSampleTypeId();
             double size = sampleTypeFileSize.getFileSize();
-            if(type==3){
-                microbeFileSize = size ;
+            if(type==1||type==2||type==3||type==7||type==8||type==9||type==10||type==11){
+                microbeFileSize = microbeFileSize + size ;
             } else if(type==4){
                 animalFileSize = size ;
             } else if(type==5){
@@ -99,7 +99,7 @@ public class CncbScreenController {
         for(SampleTypeFileSize sampleTypeFileSize:sampleTypeFileSize2){
             int type = sampleTypeFileSize.getSampleTypeId();
             double size = sampleTypeFileSize.getFileSize();
-            if(type==3){
+            if(type==1||type==2||type==3||type==7||type==8||type==9||type==10||type==11){
                 microbeFileSize = microbeFileSize + size ;
             } else if(type==4){
                 animalFileSize = animalFileSize + size ;
@@ -170,7 +170,7 @@ public class CncbScreenController {
                 plantFileSize = plantFileSize + size;
             } else if(type==4){
                 microbeDataSets = microbeDataSets + gvPrjCount;
-                microbeFileSize = plantFileSize + size;
+                microbeFileSize = microbeFileSize + size;
             }
         }
 

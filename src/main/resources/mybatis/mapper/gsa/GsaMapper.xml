@@ -319,18 +319,18 @@
     </select>
     <select id="getCraCountsBySampleType" resultType="SampleTypeCounts">
         select s.sample_type_id as sampleTypeId,count(DISTINCT e.cra_id) as counts from sample s,experiment e,cra c
-        where s.status=3 and e.`status`=3 and e.sample_id=s.sample_id and c.`status`=3 and c.cra_id=e.cra_id and s.sample_type_id in (3,4,5,6)
+        where s.status=3 and e.`status`=3 and e.sample_id=s.sample_id and c.`status`=3 and c.cra_id=e.cra_id
         group by s.sample_type_id;
     </select>
     <select id="getCraFileSizeBySampleType1" resultType="SampleTypeFileSize">
         select s.sample_type_id as sampleTypeId,IFNULL(sum(rdf.run_file_size)/(281926058404.1026),0) as fileSize from sample s,run_data_file rdf
-        where s.status=3 and rdf.`status`=10 and rdf.sample_id=s.sample_id and s.sample_type_id in (3,4,5,6) and (rdf.run_data_type_id =1 or rdf.run_data_type_id is null )
+        where s.status=3 and rdf.`status`=10 and rdf.sample_id=s.sample_id and (rdf.run_data_type_id =1 or rdf.run_data_type_id is null )
         group by s.sample_type_id
     </select>
 
     <select id="getCraFileSizeBySampleType2" resultType="SampleTypeFileSize">
         select s.sample_type_id as sampleTypeId,IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024),0) as fileSize from sample s,run_data_file rdf
-        where s.status=3 and rdf.`status`=10 and rdf.sample_id=s.sample_id and s.sample_type_id in (3,4,5,6) and rdf.run_data_type_id !=1
+        where s.status=3 and rdf.`status`=10 and rdf.sample_id=s.sample_id and rdf.run_data_type_id !=1
         group by s.sample_type_id
     </select>
 
