@@ -269,6 +269,7 @@ public class CncbScreenController {
         String result = "";
         result = HttpRequestUtil.doHttpGetResponseJson(dbUrl, null);
         List<DbAnalytics> dbList = JSONObject.parseArray(result,DbAnalytics.class);
+        dbList = dbList.subList(0,20);
         return dbList;
     }
 }
