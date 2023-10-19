@@ -5,6 +5,7 @@ import cn.ac.big.bigd.webservice.mapper.human.StudyMapper;
 import cn.ac.big.bigd.webservice.mapper.ncbi.NcbiMapper;
 import cn.ac.big.bigd.webservice.mapper.zabbix.ZabbixMapper;
 import cn.ac.big.bigd.webservice.model.cncb.DownLoad;
+import cn.ac.big.bigd.webservice.model.gsa.DataList;
 import cn.ac.big.bigd.webservice.model.gsa.SampleTypeFileSize;
 import cn.ac.big.bigd.webservice.model.screen.*;
 import cn.ac.big.bigd.webservice.model.gsa.SampleTypeCounts;
@@ -256,5 +257,18 @@ public class CncbScreenController {
         trafficAll.setUploadTrafficAvg(upload);
         trafficAll.setDownLoadTrafficAvg(downLoad);
         return trafficAll;
+    }
+
+    /**
+     * 获取中心数据库访问统计
+     */
+    @RequestMapping(value = "/getDbAnalytics")
+    public List<DbAnalytics> getDbAnalytics(HttpServletResponse httpServletResponse) throws Exception {
+        httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
+        String dbUrl = "https://ngdc.cncb.ac.cn/analytics/api/db/rank";
+        String result = "";
+        result = HttpRequestUtil.doHttpGetResponseJson(dbUrl, null);
+        List<DbAnalytics> dbList = JSONObject.parseArray(result,DbAnalytics.class);
+        return dbList;
     }
 }
