@@ -70,7 +70,8 @@ public class DataController {
         String gwhUrl = "https://ngdc.cncb.ac.cn/gwh/getGwhAccession/"+prjAcc;
         String resultGwh = "";
         resultGwh = HttpRequestUtil.doHttpGetResponseJson(gwhUrl, null);
-        List<DataList> gwhList = JSONObject.parseArray(resultGwh,DataList.class);
+        JSONArray arrayGwh = JSON.parseArray(resultGwh);
+        List<DataList> gwhList = JSONObject.parseArray(arrayGwh.toJSONString(),DataList.class);
         fairLists.addAll(gwhList);
         //DataBaseCommons
         String dbUrl = "https://ngdc.cncb.ac.cn/databasecommons/api/biodb/list/"+fundPam;

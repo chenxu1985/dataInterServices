@@ -2,11 +2,14 @@ package cn.ac.big.bigd.webservice.controller.screen;
 
 import cn.ac.big.bigd.webservice.mapper.gsa.GsaMapper;
 import cn.ac.big.bigd.webservice.mapper.human.StudyMapper;
+import cn.ac.big.bigd.webservice.mapper.monitor.MonitorMapper;
 import cn.ac.big.bigd.webservice.mapper.ncbi.NcbiMapper;
 import cn.ac.big.bigd.webservice.mapper.zabbix.ZabbixMapper;
 import cn.ac.big.bigd.webservice.model.cncb.DownLoad;
 import cn.ac.big.bigd.webservice.model.gsa.DataList;
 import cn.ac.big.bigd.webservice.model.gsa.SampleTypeFileSize;
+import cn.ac.big.bigd.webservice.model.monitor.Machine;
+import cn.ac.big.bigd.webservice.model.monitor.MachineDetail;
 import cn.ac.big.bigd.webservice.model.screen.*;
 import cn.ac.big.bigd.webservice.model.gsa.SampleTypeCounts;
 import cn.ac.big.bigd.webservice.model.zabbix.*;
@@ -18,7 +21,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.crypto.Mac;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -36,6 +41,8 @@ public class CncbScreenController {
     private NcbiMapper ncbiMapper;
     @Autowired
     private ZabbixMapper zabbixMapper;
+    @Autowired
+    private MonitorMapper monitorMapper;
     @RequestMapping(value = "/getScreenData")
     public ScreenServicesData getScreenData(HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
@@ -272,4 +279,33 @@ public class CncbScreenController {
         dbList = dbList.subList(0,20);
         return dbList;
     }
+
+    /**
+     * 获取大型机信息
+     */
+    @RequestMapping(value = "/getMachineLog")
+    public Machine getMachineLog(HttpServletResponse httpServletResponse) throws Exception {
+        httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
+        Machine machine = new Machine();
+        machine = this.monitorMapper.getMachineLog();
+        List<MachineDetail> machineDetails = this.monitorMapper.getMachineList();
+        List<Integer> chartList = new ArrayList<>();
+        List<Integer> memList = new ArrayList<>();
+        List<String> timeList = new ArrayList<>();
+        for(MachineDetail machineDetail:machineDetails){
+            Date add = machineDetail.getAddTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String da = sdf.format(add);
+            Integer chart = machineDetail.getCpuUsage();
+            Integer mem = machineDetail.getMemUsage();
+            timeList.add(da);
+            chartList.add(chart);
+            memList.add(mem);
+        }
+        machine.setTimeList(timeList);
+        machine.setChartList(chartList);
+        machine.setMemList(memList);
+        return machine;
+    }
+
 }

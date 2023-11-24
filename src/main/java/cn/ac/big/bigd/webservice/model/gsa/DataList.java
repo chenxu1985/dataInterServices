@@ -21,7 +21,11 @@ public class DataList {
     }
 
     public void setPublishDate(String publishDate) {
-        this.publishDate = publishDate.substring(0,10);
+        if(!publishDate.equals("-")){
+            this.publishDate = publishDate.substring(0,10);
+        } else {
+            this.publishDate = publishDate;
+        }
     }
 
     public String getDownloadUrl() {
