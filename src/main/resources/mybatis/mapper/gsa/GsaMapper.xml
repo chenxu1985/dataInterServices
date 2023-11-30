@@ -295,7 +295,7 @@
 		WHERE
 			c.accession = #{accession}
     </select>
-    <select id="selectMaxPb"  resultType="int">
+    <select id="selectMaxPb"  resultType="Double">
 		select  max(a.maxPb) as max from (select sum(DISTINCT file_size) as maxPb from date_file_size group by date order by sum(file_size) desc,date desc) a
 	</select>
     <select id="selectAllDate"  resultType="DateFileSize">

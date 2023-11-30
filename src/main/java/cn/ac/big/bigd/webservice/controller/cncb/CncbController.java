@@ -314,7 +314,8 @@ public class CncbController {
 
     public IndexLine getLineGsa(){
         IndexLine indexLine = new IndexLine();
-        int maxPb = this.gsaMapper.selectMaxPb();
+        Double maxPb = this.gsaMapper.selectMaxPb();
+        java.text.DecimalFormat   dfInsdc   =new   java.text.DecimalFormat("#.00");
         int day=0;
         List<DateFileSize> dateFileSizeList = this.gsaMapper.selectAllDate();
         List<String> dateList = new ArrayList<>();
@@ -331,13 +332,14 @@ public class CncbController {
             fileList.add(fileSize);
         }
         indexLine.setDateList(dateList);
-        indexLine.setMaxPb(maxPb);
+        indexLine.setMaxPb(dfInsdc.format(maxPb));
         indexLine.setFileList(fileList);
         return indexLine;
     }
     public IndexLine getLineInsdc(){
         IndexLine indexLine = new IndexLine();
-        int maxPb = this.ncbiMapper.selectMaxPb();
+        Double maxPb = this.ncbiMapper.selectMaxPb();
+        java.text.DecimalFormat   dfInsdc   =new   java.text.DecimalFormat("#.00");
         List<String> dateList = new ArrayList<>();
         SimpleDateFormat f2 = new SimpleDateFormat("yyyy-MM-dd");
         Calendar start = Calendar.getInstance();
@@ -371,7 +373,7 @@ public class CncbController {
             datePb = Double.parseDouble(df1.format(datePb));
             fileList.add(datePb);
         }
-        indexLine.setMaxPb(maxPb);
+        indexLine.setMaxPb(dfInsdc.format(maxPb));
         indexLine.setDateList(dateList);
         indexLine.setFileList(fileList);
         return indexLine;

@@ -31,7 +31,7 @@ public interface GsaMapper {
     int getJournalCounts();
     CraDownLoad selectCraByAccession(String accession);
     CraDownLoad selectCraByProAccession(String accession);
-    int selectMaxPb();
+    Double selectMaxPb();
     List<DateFileSize> selectAllDate();
 
     int getCraCountByPrjIdNoDelete(int prjId);

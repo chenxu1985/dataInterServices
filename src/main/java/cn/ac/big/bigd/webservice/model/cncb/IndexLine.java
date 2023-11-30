@@ -5,7 +5,7 @@ import java.util.List;
 public class IndexLine {
     private List<String> dateList;
     private List<Double> fileList;
-    private int maxPb;
+    private String maxPb;
 
     public List<String> getDateList() {
         return dateList;
@@ -23,11 +23,11 @@ public class IndexLine {
         this.fileList = fileList;
     }
 
-    public int getMaxPb() {
+    public String getMaxPb() {
         return maxPb;
     }
 
-    public void setMaxPb(int maxPb) {
+    public void setMaxPb(String maxPb) {
         this.maxPb = maxPb;
     }
 }
