@@ -2,54 +2,58 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.ac.big.bigd.webservice.mapper.monitor.MonitorMapper">
     <resultMap id="Machine" type="Machine">
-        <result column="machine_log_id" property="machineLogId" jdbcType="INTEGER" />
-        <result column="cpu_node_total" property="cpuNodeTotal" jdbcType="INTEGER" />
-        <result column="cpu_node_core_total" property="cpuNodeCoreTotal" jdbcType="INTEGER" />
-        <result column="cpu_tf" property="cpuTf" jdbcType="INTEGER" />
-        <result column="gpu_node_total" property="gpuNodeTotal" jdbcType="INTEGER" />
-        <result column="gpu_node_core_total" property="gpuNodeCoreTotal" jdbcType="INTEGER" />
-        <result column="gpu_tf" property="gpuTf" jdbcType="INTEGER" />
-        <result column="gsa_pub_total" property="gsaPubTotal" jdbcType="VARCHAR" />
-        <result column="gsa_pub_free" property="gsaPubFree" jdbcType="VARCHAR" />
-        <result column="gsa_pub_use" property="gsaPubUse" jdbcType="VARCHAR" />
-        <result column="gsa_priv_total" property="gsaPrivTotal" jdbcType="VARCHAR" />
-        <result column="gsa_priv_free" property="gsaPrivFree" jdbcType="VARCHAR" />
-        <result column="gsa_priv_use" property="gsaPrivUse" jdbcType="VARCHAR" />
-        <result column="human_pub_total" property="humanPubTotal" jdbcType="VARCHAR" />
-        <result column="human_pub_free" property="humanPubFree" jdbcType="VARCHAR" />
-        <result column="human_pub_use" property="humanPubUse" jdbcType="VARCHAR" />
-        <result column="human_priv_total" property="humanPrivTotal" jdbcType="VARCHAR" />
-        <result column="human_priv_free" property="humanPrivFree" jdbcType="VARCHAR" />
-        <result column="human_priv_use" property="humanPrivUse" jdbcType="VARCHAR" />
-        <result column="genomes_total" property="genomesTotal" jdbcType="VARCHAR" />
-        <result column="genomes_free" property="genomesFree" jdbcType="VARCHAR" />
-        <result column="genomes_use" property="genomesUse" jdbcType="VARCHAR" />
-        <result column="offline_store_total" property="offlineStoreTotal" jdbcType="VARCHAR" />
-        <result column="online_store_total" property="onlineStoreTotal" jdbcType="VARCHAR" />
-        <result column="online_user" property="onlineUser" jdbcType="VARCHAR" />
-        <result column="cpu_usage" property="cpuUsage" jdbcType="VARCHAR" />
-        <result column="mem_usage" property="memUsage" jdbcType="VARCHAR" />
-        <result column="web_node" property="webNode" jdbcType="VARCHAR" />
-        <result column="db_node" property="dbNode" jdbcType="VARCHAR" />
-        <result column="ftp_node" property="ftpNode" jdbcType="VARCHAR" />
-        <result column="vm_node" property="vmNode" jdbcType="VARCHAR" />
-        <result column="job_total" property="jobTotal" jdbcType="VARCHAR" />
-        <result column="job_run" property="jobRun" jdbcType="VARCHAR" />
-        <result column="job_queue" property="jobQueue" jdbcType="VARCHAR" />
-        <result column="add_time" property="addTime" jdbcType="DATE" />
+        <result column="machine_log_id" property="machineLogId" jdbcType="INTEGER"/>
+        <result column="cpu_node_total" property="cpuNodeTotal" jdbcType="INTEGER"/>
+        <result column="cpu_node_core_total" property="cpuNodeCoreTotal" jdbcType="INTEGER"/>
+        <result column="cpu_tf" property="cpuTf" jdbcType="INTEGER"/>
+        <result column="gpu_node_total" property="gpuNodeTotal" jdbcType="INTEGER"/>
+        <result column="gpu_node_core_total" property="gpuNodeCoreTotal" jdbcType="INTEGER"/>
+        <result column="gpu_tf" property="gpuTf" jdbcType="INTEGER"/>
+        <result column="gsa_pub_total" property="gsaPubTotal" jdbcType="VARCHAR"/>
+        <result column="gsa_pub_free" property="gsaPubFree" jdbcType="VARCHAR"/>
+        <result column="gsa_pub_use" property="gsaPubUse" jdbcType="VARCHAR"/>
+        <result column="gsa_priv_total" property="gsaPrivTotal" jdbcType="VARCHAR"/>
+        <result column="gsa_priv_free" property="gsaPrivFree" jdbcType="VARCHAR"/>
+        <result column="gsa_priv_use" property="gsaPrivUse" jdbcType="VARCHAR"/>
+        <result column="human_pub_total" property="humanPubTotal" jdbcType="VARCHAR"/>
+        <result column="human_pub_free" property="humanPubFree" jdbcType="VARCHAR"/>
+        <result column="human_pub_use" property="humanPubUse" jdbcType="VARCHAR"/>
+        <result column="human_priv_total" property="humanPrivTotal" jdbcType="VARCHAR"/>
+        <result column="human_priv_free" property="humanPrivFree" jdbcType="VARCHAR"/>
+        <result column="human_priv_use" property="humanPrivUse" jdbcType="VARCHAR"/>
+        <result column="genomes_total" property="genomesTotal" jdbcType="VARCHAR"/>
+        <result column="genomes_free" property="genomesFree" jdbcType="VARCHAR"/>
+        <result column="genomes_use" property="genomesUse" jdbcType="VARCHAR"/>
+        <result column="offline_store_total" property="offlineStoreTotal" jdbcType="VARCHAR"/>
+        <result column="online_store_total" property="onlineStoreTotal" jdbcType="VARCHAR"/>
+        <result column="online_user" property="onlineUser" jdbcType="VARCHAR"/>
+        <result column="cpu_usage" property="cpuUsage" jdbcType="VARCHAR"/>
+        <result column="mem_usage" property="memUsage" jdbcType="VARCHAR"/>
+        <result column="web_node" property="webNode" jdbcType="VARCHAR"/>
+        <result column="db_node" property="dbNode" jdbcType="VARCHAR"/>
+        <result column="ftp_node" property="ftpNode" jdbcType="VARCHAR"/>
+        <result column="vm_node" property="vmNode" jdbcType="VARCHAR"/>
+        <result column="job_total" property="jobTotal" jdbcType="VARCHAR"/>
+        <result column="job_run" property="jobRun" jdbcType="VARCHAR"/>
+        <result column="job_queue" property="jobQueue" jdbcType="VARCHAR"/>
+        <result column="add_time" property="addTime" jdbcType="DATE"/>
     </resultMap>
 
     <resultMap id="MachineDetail" type="MachineDetail">
-        <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
-        <result column="cpu_usage" property="cpuUsage" jdbcType="INTEGER" />
-        <result column="mem_usage" property="memUsage" jdbcType="INTEGER" />
+        <result column="add_time" property="addTime" jdbcType="TIMESTAMP"/>
+        <result column="cpu_usage" property="cpuUsage" jdbcType="INTEGER"/>
+        <result column="mem_usage" property="memUsage" jdbcType="INTEGER"/>
     </resultMap>
 
-    <select id="getMachineLog"  resultType="Machine">
-        SELECT * from machine_log ORDER BY machine_log_id DESC LIMIT 1
-	</select>
-    <select id="getMachineList"  resultType="MachineDetail">
-        select add_time, cpu_usage, mem_usage from machine_log order by add_time DESC LIMIT 480
+    <select id="getMachineLog" resultType="Machine">
+        SELECT *
+        from machine_log
+        ORDER BY machine_log_id DESC LIMIT 1
+    </select>
+    <select id="getMachineList" resultType="MachineDetail">
+        select add_time, cpu_usage, mem_usage
+        from machine_log
+        order by add_time DESC LIMIT 480
     </select>
 
 </mapper>

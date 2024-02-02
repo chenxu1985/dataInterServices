@@ -43,6 +43,7 @@ public class CncbScreenController {
     private ZabbixMapper zabbixMapper;
     @Autowired
     private MonitorMapper monitorMapper;
+
     @RequestMapping(value = "/getScreenData")
     public ScreenServicesData getScreenData(HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
@@ -53,11 +54,11 @@ public class CncbScreenController {
         Double humanAchivedFastqData = this.studyMapper.getFastqAchivedData();
         Double humanAchivedOtherData = this.studyMapper.getOtherAchivedData();
         Double allAchivedData = gsaAchivedFastqData + gsaAchivedOtherData + humanAchivedFastqData + humanAchivedOtherData;
-        java.text.DecimalFormat   dfGsa   =new   java.text.DecimalFormat("#.0");
+        java.text.DecimalFormat dfGsa = new java.text.DecimalFormat("#.0");
         servicesData.setGsaData(dfGsa.format(allAchivedData));
         //Insdc数据量
         Double insdcData = this.ncbiMapper.getFileSizeAll();
-        java.text.DecimalFormat   dfInsdc   =new   java.text.DecimalFormat("#.00");
+        java.text.DecimalFormat dfInsdc = new java.text.DecimalFormat("#.00");
         servicesData.setInsdcData(dfInsdc.format(insdcData));
         //疾病与自然人
         int patientIndividuals = this.studyMapper.getPatientIndividuals();
@@ -74,15 +75,15 @@ public class CncbScreenController {
         double animalFileSize = 0;
         double humanFileSize = 0;
         double plantFileSize = 0;
-        for(SampleTypeCounts typeCounts:sampleTypeCounts){
+        for (SampleTypeCounts typeCounts : sampleTypeCounts) {
             int typeId = typeCounts.getSampleTypeId();
-            if(typeId==1||typeId==2||typeId==3||typeId==7||typeId==8||typeId==9||typeId==10||typeId==11){
+            if (typeId == 1 || typeId == 2 || typeId == 3 || typeId == 7 || typeId == 8 || typeId == 9 || typeId == 10 || typeId == 11) {
                 microbeDataSets = microbeDataSets + typeCounts.getCounts();
-            } else if(typeId==4){
+            } else if (typeId == 4) {
                 animalDataSets = typeCounts.getCounts();
-            } else if(typeId==5){
+            } else if (typeId == 5) {
                 humanDataSets = typeCounts.getCounts();
-            } else if(typeId==6){
+            } else if (typeId == 6) {
                 plantDataSets = typeCounts.getCounts();
             }
         }
@@ -90,56 +91,56 @@ public class CncbScreenController {
         double hraFileSize = this.studyMapper.getHraFileSize();
         List<SampleTypeFileSize> sampleTypeFileSize1 = this.gsaMapper.getCraFileSizeBySampleType1();
         List<SampleTypeFileSize> sampleTypeFileSize2 = this.gsaMapper.getCraFileSizeBySampleType2();
-        for(SampleTypeFileSize sampleTypeFileSize:sampleTypeFileSize1){
+        for (SampleTypeFileSize sampleTypeFileSize : sampleTypeFileSize1) {
             int type = sampleTypeFileSize.getSampleTypeId();
             double size = sampleTypeFileSize.getFileSize();
-            if(type==1||type==2||type==3||type==7||type==8||type==9||type==10||type==11){
-                microbeFileSize = microbeFileSize + size ;
-            } else if(type==4){
-                animalFileSize = size ;
-            } else if(type==5){
-                humanFileSize = size ;
-            } else if(type==6){
-                plantFileSize = size ;
+            if (type == 1 || type == 2 || type == 3 || type == 7 || type == 8 || type == 9 || type == 10 || type == 11) {
+                microbeFileSize = microbeFileSize + size;
+            } else if (type == 4) {
+                animalFileSize = size;
+            } else if (type == 5) {
+                humanFileSize = size;
+            } else if (type == 6) {
+                plantFileSize = size;
             }
         }
 
-        for(SampleTypeFileSize sampleTypeFileSize:sampleTypeFileSize2){
+        for (SampleTypeFileSize sampleTypeFileSize : sampleTypeFileSize2) {
             int type = sampleTypeFileSize.getSampleTypeId();
             double size = sampleTypeFileSize.getFileSize();
-            if(type==1||type==2||type==3||type==7||type==8||type==9||type==10||type==11){
-                microbeFileSize = microbeFileSize + size ;
-            } else if(type==4){
-                animalFileSize = animalFileSize + size ;
-            } else if(type==5){
-                humanFileSize = humanFileSize + size ;
-            } else if(type==6){
-                plantFileSize = plantFileSize + size ;
+            if (type == 1 || type == 2 || type == 3 || type == 7 || type == 8 || type == 9 || type == 10 || type == 11) {
+                microbeFileSize = microbeFileSize + size;
+            } else if (type == 4) {
+                animalFileSize = animalFileSize + size;
+            } else if (type == 5) {
+                humanFileSize = humanFileSize + size;
+            } else if (type == 6) {
+                plantFileSize = plantFileSize + size;
             }
         }
         humanDataSets = humanDataSets + hraDataSets;
         humanFileSize = humanFileSize + hraFileSize;
         String gwhUrl = "https://ngdc.cncb.ac.cn/gwh/api/statistics/getNewAssemblyStats";
         String resultGwh = "";
-        resultGwh  = HttpRequestUtil.doHttpGetResponseJson(gwhUrl, null);
+        resultGwh = HttpRequestUtil.doHttpGetResponseJson(gwhUrl, null);
         JSONObject jsonObject = new JSONObject();
         jsonObject = JSONObject.parseObject(resultGwh);
         int microbiology_id_count = Integer.parseInt((String) jsonObject.get("microbiology_id_count"));
-        double microbiology_size_sum = Double.parseDouble((String)jsonObject.get("microbiology_size_sum"));
-        microbiology_size_sum = microbiology_size_sum /1048576;
-        microbiology_size_sum = microbiology_size_sum /1048576;
-        int animals_id_count = Integer.parseInt((String)jsonObject.get("animals_id_count"));
-        double animals_size_sum = Double.parseDouble((String)jsonObject.get("animals_size_sum"));
-        animals_size_sum = animals_size_sum /1048576;
-        animals_size_sum = animals_size_sum /1048576;
-        int human_id_count = Integer.parseInt((String)jsonObject.get("human_id_count"));
-        double human_size_sum = Double.parseDouble((String)jsonObject.get("human_size_sum"));
-        human_size_sum = human_size_sum /1048576;
-        human_size_sum = human_size_sum /1048576;
-        int plants_id_count = Integer.parseInt((String)jsonObject.get("plants_id_count"));
-        double plants_size_sum = Double.parseDouble((String)jsonObject.get("plants_size_sum"));
-        plants_size_sum = plants_size_sum /1048576;
-        plants_size_sum = plants_size_sum /1048576;
+        double microbiology_size_sum = Double.parseDouble((String) jsonObject.get("microbiology_size_sum"));
+        microbiology_size_sum = microbiology_size_sum / 1048576;
+        microbiology_size_sum = microbiology_size_sum / 1048576;
+        int animals_id_count = Integer.parseInt((String) jsonObject.get("animals_id_count"));
+        double animals_size_sum = Double.parseDouble((String) jsonObject.get("animals_size_sum"));
+        animals_size_sum = animals_size_sum / 1048576;
+        animals_size_sum = animals_size_sum / 1048576;
+        int human_id_count = Integer.parseInt((String) jsonObject.get("human_id_count"));
+        double human_size_sum = Double.parseDouble((String) jsonObject.get("human_size_sum"));
+        human_size_sum = human_size_sum / 1048576;
+        human_size_sum = human_size_sum / 1048576;
+        int plants_id_count = Integer.parseInt((String) jsonObject.get("plants_id_count"));
+        double plants_size_sum = Double.parseDouble((String) jsonObject.get("plants_size_sum"));
+        plants_size_sum = plants_size_sum / 1048576;
+        plants_size_sum = plants_size_sum / 1048576;
         microbeDataSets = microbeDataSets + microbiology_id_count;
         animalDataSets = animalDataSets + animals_id_count;
         humanDataSets = humanDataSets + human_id_count;
@@ -151,32 +152,32 @@ public class CncbScreenController {
 
         String gvmUrl = "https://ngdc.cncb.ac.cn/gvm/ajax/ajaxGetGVMStatBySpeciesType";
         String resultGvm = "";
-        resultGvm  = HttpRequestUtil.doHttpGetResponseJson(gvmUrl, null);
+        resultGvm = HttpRequestUtil.doHttpGetResponseJson(gvmUrl, null);
         JSONObject jsonObjectGvm = new JSONObject();
         jsonObjectGvm = JSONObject.parseObject(resultGvm);
         net.sf.json.JSONArray jsonArray = JSONArray.fromObject(jsonObjectGvm.get("projectStatBeanList"));
         Iterator<Object> it = jsonArray.iterator();
         List<GvmDataComposition> gvmDataCompositions = new ArrayList<GvmDataComposition>();
-        while(it.hasNext()){
-            net.sf.json.JSONObject obj = (net.sf.json.JSONObject)it.next();
+        while (it.hasNext()) {
+            net.sf.json.JSONObject obj = (net.sf.json.JSONObject) it.next();
             GvmDataComposition gvmDataComposition = (GvmDataComposition) net.sf.json.JSONObject.toBean(obj, GvmDataComposition.class);
             gvmDataCompositions.add(gvmDataComposition);
         }
 
-        for(GvmDataComposition gv:gvmDataCompositions){
+        for (GvmDataComposition gv : gvmDataCompositions) {
             int type = gv.getType();
             int gvPrjCount = gv.getPrjCount();
             double size = gv.getFileSize();
-            if(type==1){
+            if (type == 1) {
                 humanDataSets = humanDataSets + gvPrjCount;
                 humanFileSize = humanFileSize + size;
-            } else if(type==2){
+            } else if (type == 2) {
                 animalDataSets = animalDataSets + gvPrjCount;
                 animalFileSize = animalFileSize + size;
-            } else if(type==3){
+            } else if (type == 3) {
                 plantDataSets = plantDataSets + gvPrjCount;
                 plantFileSize = plantFileSize + size;
-            } else if(type==4){
+            } else if (type == 4) {
                 microbeDataSets = microbeDataSets + gvPrjCount;
                 microbeFileSize = microbeFileSize + size;
             }
@@ -200,6 +201,7 @@ public class CncbScreenController {
         servicesData.setCiteCnt(citeCnt);
         return servicesData;
     }
+
     /**
      * 获取实时速率
      */
@@ -213,6 +215,7 @@ public class CncbScreenController {
         realTime.setDownLoadRealTime(downLoadRealTime);
         return realTime;
     }
+
     /**
      * 7天内详情
      */
@@ -226,11 +229,12 @@ public class CncbScreenController {
         trafficDetail.setDownLoad(downLoad);
         return trafficDetail;
     }
+
     /**
      * 历史流量统计
      */
     @RequestMapping(value = "/getTrafficList/{day}")
-    public TrafficHistory getTrafficList(@PathVariable("day") int day,HttpServletResponse httpServletResponse) throws Exception {
+    public TrafficHistory getTrafficList(@PathVariable("day") int day, HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
         TrafficHistory trafficHistory = new TrafficHistory();
         List<TrafficHistoryDetail> upload = this.zabbixMapper.getUploadTrafficHistoryList(day);
@@ -239,11 +243,12 @@ public class CncbScreenController {
         trafficHistory.setDownLoadTraffic(downLoad);
         return trafficHistory;
     }
+
     /**
      * 历史总流量统计
      */
     @RequestMapping(value = "/getTrafficAll/{day}")
-    public TrafficAll getTrafficAll(@PathVariable("day") int day,HttpServletResponse httpServletResponse) throws Exception {
+    public TrafficAll getTrafficAll(@PathVariable("day") int day, HttpServletResponse httpServletResponse) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
         TrafficAll trafficAll = new TrafficAll();
         double upload = this.zabbixMapper.getUploadTraffic(day);
@@ -252,6 +257,7 @@ public class CncbScreenController {
         trafficAll.setDownLoadTraffic(downLoad);
         return trafficAll;
     }
+
     /**
      * 全年月平均流量
      */
@@ -275,8 +281,8 @@ public class CncbScreenController {
         String dbUrl = "https://ngdc.cncb.ac.cn/analytics/api/db/rank";
         String result = "";
         result = HttpRequestUtil.doHttpGetResponseJson(dbUrl, null);
-        List<DbAnalytics> dbList = JSONObject.parseArray(result,DbAnalytics.class);
-        dbList = dbList.subList(0,20);
+        List<DbAnalytics> dbList = JSONObject.parseArray(result, DbAnalytics.class);
+        dbList = dbList.subList(0, 20);
         return dbList;
     }
 
@@ -292,7 +298,7 @@ public class CncbScreenController {
         List<Integer> chartList = new ArrayList<>();
         List<Integer> memList = new ArrayList<>();
         List<String> timeList = new ArrayList<>();
-        for(MachineDetail machineDetail:machineDetails){
+        for (MachineDetail machineDetail : machineDetails) {
             Date add = machineDetail.getAddTime();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String da = sdf.format(add);

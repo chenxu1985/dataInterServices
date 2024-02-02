@@ -13,10 +13,10 @@
         <result column="taxon_id" property="taxonId" jdbcType="VARCHAR"/>
         <result column="platform" property="platform" jdbcType="VARCHAR"/>
         <result column="library_design" property="libraryDesign" jdbcType="VARCHAR"/>
-        <result column="library_strategy" property="libraryStrategy" jdbcType="VARCHAR" />
+        <result column="library_strategy" property="libraryStrategy" jdbcType="VARCHAR"/>
         <result column="library_source" property="librarySource" jdbcType="VARCHAR"/>
-        <result column="library_selection" property="librarySelection" jdbcType="VARCHAR" />
-        <result column="library_layout" property="libraryLayout" jdbcType="VARCHAR" />
+        <result column="library_selection" property="librarySelection" jdbcType="VARCHAR"/>
+        <result column="library_layout" property="libraryLayout" jdbcType="VARCHAR"/>
         <result column="insert_size" property="insertSize" jdbcType="INTEGER"/>
         <result column="planned_read_length" property="plannedReadLength" jdbcType="INTEGER"/>
         <result column="planned_read_length_mate_1" property="plannedReadLengthMate1" jdbcType="INTEGER"/>
@@ -25,23 +25,23 @@
         <result column="run_data_type" property="runDataType" jdbcType="VARCHAR"/>
         <result column="reference_accesembly_name" property="referenceAccesemblyName" jdbcType="VARCHAR"/>
         <result column="reference_assembly_url" property="referenceAssemblyUrl" jdbcType="VARCHAR"/>
-        <result column="submitter_email" property="submitterEmail" jdbcType="VARCHAR" />
+        <result column="submitter_email" property="submitterEmail" jdbcType="VARCHAR"/>
         <result column="submitter_affiliation" property="submitterAffiliation" jdbcType="VARCHAR"/>
         <result column="submitter_name" property="submitterName" jdbcType="VARCHAR"/>
         <result column="bioproject_title" property="bioProjectTitle" jdbcType="VARCHAR"/>
         <result column="biosample_title" property="bioSampleTitle" jdbcType="VARCHAR"/>
         <collection property="runDataFiles" ofType="RunDataFile">
-            <id column="run_file_id" property="runFileId" jdbcType="INTEGER" />
-            <result column="run_file_name" property="runFileName" jdbcType="VARCHAR" />
-            <result column="run_file_size" property="runFileSize" jdbcType="VARCHAR" />
-            <result column="md5" property="md5" jdbcType="VARCHAR" />
-            <result column="archived_file_name" property="archivedFileName" jdbcType="VARCHAR" />
-            <result column="archived_file_dir" property="archivedFileDir" jdbcType="VARCHAR" />
+            <id column="run_file_id" property="runFileId" jdbcType="INTEGER"/>
+            <result column="run_file_name" property="runFileName" jdbcType="VARCHAR"/>
+            <result column="run_file_size" property="runFileSize" jdbcType="VARCHAR"/>
+            <result column="md5" property="md5" jdbcType="VARCHAR"/>
+            <result column="archived_file_name" property="archivedFileName" jdbcType="VARCHAR"/>
+            <result column="archived_file_dir" property="archivedFileDir" jdbcType="VARCHAR"/>
         </collection>
         <collection property="publications" ofType="Publication">
-            <id column="pubmed_id" property="pubmedId" jdbcType="INTEGER" />
-            <result column="article_title" property="articleTitle" jdbcType="VARCHAR" />
-            <result column="journal_title" property="journalTitle" jdbcType="VARCHAR" />
+            <id column="pubmed_id" property="pubmedId" jdbcType="INTEGER"/>
+            <result column="article_title" property="articleTitle" jdbcType="VARCHAR"/>
+            <result column="journal_title" property="journalTitle" jdbcType="VARCHAR"/>
         </collection>
     </resultMap>
 
@@ -109,112 +109,205 @@
     </resultMap>
 
     <resultMap id="DateFileSize" type="DateFileSize">
-        <id column="id" property="id" jdbcType="INTEGER" />
-        <result column="date" property="date" jdbcType="VARCHAR" />
-        <result column="file_size" property="fileSize" jdbcType="DOUBLE" />
-        <result column="type" property="type" jdbcType="VARCHAR" />
-        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="date" property="date" jdbcType="VARCHAR"/>
+        <result column="file_size" property="fileSize" jdbcType="DOUBLE"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <resultMap id="SampleTypeCounts" type="SampleTypeCounts">
-        <result column="sampleTypeId" property="sampleTypeId" jdbcType="INTEGER" />
-        <result column="counts" property="counts" jdbcType="INTEGER" />
+        <result column="sampleTypeId" property="sampleTypeId" jdbcType="INTEGER"/>
+        <result column="counts" property="counts" jdbcType="INTEGER"/>
     </resultMap>
     <resultMap id="SampleTypeFileSize" type="SampleTypeFileSize">
-        <result column="sampleTypeId" property="sampleTypeId" jdbcType="INTEGER" />
-        <result column="fileSize" property="fileSize" jdbcType="DOUBLE" />
+        <result column="sampleTypeId" property="sampleTypeId" jdbcType="INTEGER"/>
+        <result column="fileSize" property="fileSize" jdbcType="DOUBLE"/>
     </resultMap>
 
 
     <select id="selectRecordsByReleaseDate" parameterType="hashMap" resultMap="GSAForBioOne">
-      SELECT
-	    gsa.accession as gsa_accession,gsa.release_time as release_time,
-	    prj.accession as bioproject_accession,prj.title as bioproject_title,
-	    sample.accession as biosample_accession,sample.title as biosample_title,
-	    taxon.name_txt as taxon_name,taxon.tax_id as taxon_id,
-	    exp.accession as experiment_accession,
-	    platform.platform_name as platform,exp.lib_design as library_design,
-	    strategy.strategy_name as library_strategy,source.source_name as library_source,
-	    selection.selection_name as library_selection,exp.lib_layout as library_layout,exp.lib_insert_size as insert_size,
-	    exp.planned_read_length as planned_read_length,exp.planned_read_length_mate_1 as planned_read_length_mate_1,exp.planned_read_length_mate_2 as planned_read_length_mate_2,
-	    run.run_id as run_id,run.accession as run_accession,run.alias as title,
-	    run_type.run_data_type_name as run_data_type,data.run_file_id,data.run_file_name as run_file_name,data.archived_file_name as archived_file_name,data.archived_file_dir as archived_file_dir,data.md5 as md5,data.run_file_size as run_file_size,
-	    reference.reference_name as reference_accesembly_name,reference.url as reference_url,
-	    user.email as submitter_email,user.organization_standard as submitter_affiliation,concat(user.middle_name,user.last_name,' ',user.first_name) as submitter_name,
-	    publication.pubmed_id as pubmed_id,publication.article_title as article_title,publication.journal_title as journal_title
-      FROM
-	    cra gsa
-	    LEFT JOIN user on user.user_id=gsa.user_id
-	    LEFT JOIN experiment exp on exp.cra_id=gsa.cra_id and exp.status=3 and exp.release_state=2
-	    LEFT JOIN exp_platform platform on platform.platform_id = exp.platform_id
-	    LEFT JOIN exp_lib_strategy strategy on strategy.strategy_id=exp.strategy_id
-	    LEFT JOIN exp_lib_source source on source.source_id=exp.source_id
-	    LEFT JOIN exp_lib_selection selection on selection.selection_id=exp.selection_id
-	    LEFT JOIN run on run.exp_id=exp.exp_id and run.status=10 and run.release_state=2
-	    LEFT JOIN reference_file reference on reference.reference_id=run.reference_id
-	    LEFT JOIN run_data_file data on data.run_id=run.run_id and data.status=10
-	    LEFT JOIN run_data_type run_type on run_type.run_data_type_id=run.run_data_type_id
-	    LEFT JOIN project prj on prj.prj_id=exp.prj_id
-	    LEFT JOIN publication on publication.prj_id=prj.prj_id
-	    LEFT JOIN sample on sample.sample_id=exp.sample_id
-	    LEFT JOIN taxon_name taxon on taxon.tax_id=sample.taxon_id and taxon.name_class='scientific name'
-      WHERE
-        <![CDATA[gsa.status=3 and gsa.release_state=2 and gsa.release_time>=#{startTime} and gsa.release_time <= #{endTime} order by gsa.cra_id]]>
+        SELECT gsa.accession                                                  as gsa_accession,
+               gsa.release_time                                               as release_time,
+               prj.accession                                                  as bioproject_accession,
+               prj.title                                                      as bioproject_title,
+               sample.accession                                               as biosample_accession,
+               sample.title                                                   as biosample_title,
+               taxon.name_txt                                                 as taxon_name,
+               taxon.tax_id                                                   as taxon_id,
+               exp.accession                                                  as experiment_accession,
+               platform.platform_name                                         as platform,
+               exp.lib_design                                                 as library_design,
+               strategy.strategy_name                                         as library_strategy,
+               source.source_name                                             as library_source,
+               selection.selection_name                                       as library_selection,
+               exp.lib_layout                                                 as library_layout,
+               exp.lib_insert_size                                            as insert_size,
+               exp.planned_read_length                                        as planned_read_length,
+               exp.planned_read_length_mate_1                                 as planned_read_length_mate_1,
+               exp.planned_read_length_mate_2                                 as planned_read_length_mate_2,
+               run.run_id                                                     as run_id,
+               run.accession                                                  as run_accession,
+               run.alias                                                      as title,
+               run_type.run_data_type_name                                    as run_data_type,
+               data.run_file_id,
+               data.run_file_name                                             as run_file_name,
+               data.archived_file_name                                        as archived_file_name,
+               data.archived_file_dir                                         as archived_file_dir,
+               data.md5                                                       as md5,
+               data.run_file_size                                             as run_file_size,
+               reference.reference_name                                       as reference_accesembly_name,
+               reference.url                                                  as reference_url,
+               user.email                                                     as submitter_email,
+               user.organization_standard                                     as submitter_affiliation,
+               concat(user.middle_name, user.last_name, ' ', user.first_name) as submitter_name,
+               publication.pubmed_id                                          as pubmed_id,
+               publication.article_title                                      as article_title,
+               publication.journal_title                                      as journal_title
+        FROM cra gsa
+                 LEFT JOIN user on user.user_id = gsa.user_id
+                 LEFT JOIN experiment exp on exp.cra_id = gsa.cra_id and exp.status = 3 and exp.release_state = 2
+                 LEFT JOIN exp_platform platform on platform.platform_id = exp.platform_id
+                 LEFT JOIN exp_lib_strategy strategy on strategy.strategy_id = exp.strategy_id
+                 LEFT JOIN exp_lib_source source on source.source_id = exp.source_id
+                 LEFT JOIN exp_lib_selection selection on selection.selection_id = exp.selection_id
+                 LEFT JOIN run on run.exp_id = exp.exp_id and run.status = 10 and run.release_state = 2
+                 LEFT JOIN reference_file reference on reference.reference_id = run.reference_id
+                 LEFT JOIN run_data_file data on data.run_id = run.run_id and data.status = 10
+                 LEFT JOIN run_data_type run_type on run_type.run_data_type_id = run.run_data_type_id
+                 LEFT JOIN project prj on prj.prj_id = exp.prj_id
+                 LEFT JOIN publication on publication.prj_id = prj.prj_id
+                 LEFT JOIN sample on sample.sample_id = exp.sample_id
+                 LEFT JOIN taxon_name taxon on taxon.tax_id = sample.taxon_id and taxon.name_class = 'scientific name'
+        WHERE
+        <![CDATA[gsa.status = 3
+          and gsa.release_state = 2
+          and gsa.release_time >= #{startTime}
+          and gsa.release_time <= #{endTime}
+        order by gsa.cra_id
+        ]]>
     </select>
-    <select id="getGsaBrowseList"  resultMap="GsaBrowse">
-	  SELECT c.accession as craAccession,c.title as craTitle,c.release_time as releaseTime,p.accession as prjAccession,count(distinct t.accession) as sampleCount,count(e.exp_id) as expCount,count(distinct r.accession) as runCount,u.organization_standard as organization,
-		sub.first_name as sub_first_name,sub.middle_name as sub_middle_name,sub.last_name as sub_last_name,sub.email as sub_email,sub.organization as sub_organization
-		FROM cra c,experiment e ,sample t,project p,user u,submitter sub,run r
-		where t.sample_id = e.sample_id and e.cra_id = c.cra_id and e.exp_id=r.exp_id and p.prj_id=e.prj_id and u.user_id = c.user_id and e.status=3
-		and c.release_state = 2 AND c.status = 3  AND (c.is_controlled is null or c.is_controlled!=1) and c.submitter_id=sub.submitter_id group by c.cra_id ORDER BY c.release_time desc
+    <select id="getGsaBrowseList" resultMap="GsaBrowse">
+        SELECT c.accession                 as craAccession,
+               c.title                     as craTitle,
+               c.release_time              as releaseTime,
+               p.accession                 as prjAccession,
+               count(distinct t.accession) as sampleCount,
+               count(e.exp_id)             as expCount,
+               count(distinct r.accession) as runCount,
+               u.organization_standard     as organization,
+               sub.first_name              as sub_first_name,
+               sub.middle_name             as sub_middle_name,
+               sub.last_name               as sub_last_name,
+               sub.email                   as sub_email,
+               sub.organization            as sub_organization
+        FROM cra c,
+             experiment e,
+             sample t,
+             project p,
+             user u,
+             submitter sub,
+             run r
+        where t.sample_id = e.sample_id
+          and e.cra_id = c.cra_id
+          and e.exp_id = r.exp_id
+          and p.prj_id = e.prj_id
+          and u.user_id = c.user_id
+          and e.status = 3
+          and c.release_state = 2
+          AND c.status = 3
+          AND (c.is_controlled is null or c.is_controlled!=1)
+          and c.submitter_id = sub.submitter_id
+        group by c.cra_id
+        ORDER BY c.release_time desc
     </select>
 
 
     <select id="getCraListBySampleId" parameterType="Int" resultMap="Cra">
-		SELECT
-			cra_id,accession,CONCAT('https://bigd.big.ac.cn/gsa/browse/',accession) as craUrl
-		FROM cra
-		WHERE
-			status=3 and release_state=2 and cra_id in (select distinct cra_id from experiment ex where ex.sample_id =#{sampleId} and ex.status=3 AND ex.release_state=2)
+        SELECT cra_id,
+               accession,
+               CONCAT('https://bigd.big.ac.cn/gsa/browse/', accession) as craUrl
+        FROM cra
+        WHERE status = 3
+          and release_state = 2
+          and cra_id in (select distinct cra_id
+                         from experiment ex
+                         where ex.sample_id = #{sampleId} and ex.status = 3 AND ex.release_state = 2)
     </select>
 
     <select id="selectCraByProjectAccession" parameterType="String" resultMap="Cra">
-        SELECT
-            a.*,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as run_file_size,c.accession as pro_acc
-        FROM
-            project c
-                LEFT JOIN
-            run_data_file b ON b.prj_id=c.prj_id and b.status=10
-                LEFT JOIN
-            cra a ON a.cra_id=b.cra_id
-        WHERE
-            c.accession = #{accession}
+        SELECT a.*,
+               CONVERT(sum(b.run_file_size) / (1024 * 1024 * 1024), decimal (10, 0)) as run_file_size,
+               c.accession                                                           as pro_acc
+        FROM project c
+                 LEFT JOIN
+             run_data_file b ON b.prj_id = c.prj_id and b.status = 10
+                 LEFT JOIN
+             cra a ON a.cra_id = b.cra_id
+        WHERE c.accession = #{accession}
     </select>
 
     <select id="getFairDetailGsa" resultMap="FairDetail">
-        select c.accession,c.archived_time as datePublished,c.release_time as dateAvailable,c.is_controlled as isControl,
-        "Dataset" as type,c.title,"v1" as version,c.description,"-" as keyword,"-" as subject,c.modify_time as dateModified,(case when c.release_state=2 then 3 when c.release_state=1 then 2 end) as creativeWorkStatus
-        ,c.prj_id as prjId,"-" as prjAccession,CONCAT(u.first_name,' ',u.middle_name,' ',u.last_name) as userName,u.email,u.organization_standard as org,(case when c.release_state=2 then CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",c.accession) when c.release_state=1 then "-" end) as url,
-        "open" as accessRestrictions,count(rdf.run_file_id) as fileNumber,sum(rdf.run_file_size) as fileSize,rdt.run_data_type_name as encodingFormat
-        from cra c,user u,run_data_file rdf,run_data_type rdt
-        where  u.user_id=c.user_id and rdt.run_data_type_id=rdf.run_data_type_id and rdf.cra_id=c.cra_id and c.accession=#{accession} and c.status=3
+        select c.accession,
+               c.archived_time                                                            as datePublished,
+               c.release_time                                                             as dateAvailable,
+               c.is_controlled                                                            as isControl,
+               "Dataset"                                                                  as type,
+               c.title,
+               "v1"                                                                       as version,
+               c.description,
+               "-"                                                                        as keyword,
+               "-"                                                                        as subject,
+               c.modify_time                                                              as dateModified,
+               (case when c.release_state = 2 then 3 when c.release_state = 1 then 2 end) as creativeWorkStatus
+                ,
+               c.prj_id                                                                   as prjId,
+               "-"                                                                        as prjAccession,
+               CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name)                 as userName,
+               u.email,
+               u.organization_standard                                                    as org,
+               (case
+                    when c.release_state = 2 then CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/", c.accession)
+                    when c.release_state = 1 then "-" end)                                as url,
+               "open"                                                                     as accessRestrictions,
+               count(rdf.run_file_id)                                                     as fileNumber,
+               sum(rdf.run_file_size)                                                     as fileSize,
+               rdt.run_data_type_name                                                     as encodingFormat
+        from cra c,
+             user u,
+             run_data_file rdf,
+             run_data_type rdt
+        where u.user_id = c.user_id
+          and rdt.run_data_type_id = rdf.run_data_type_id
+          and rdf.cra_id = c.cra_id
+          and c.accession = #{accession}
+          and c.status = 3
     </select>
     <select id="getFundGsa" resultMap="Fund">
-        select prj.grant_ID as grantId,prj.program as funder,prj.grant_title as fundingName,p.prj_id,p.accession
-        from pro_grants pro ,prj_grants prj,project p
-        where
-         prj.grants_id=pro.grants_id
-        and p.prj_id=pro.prj_id and p.prj_id=#{prjId}
+        select prj.grant_ID as grantId, prj.program as funder, prj.grant_title as fundingName, p.prj_id, p.accession
+        from pro_grants pro,
+             prj_grants prj,
+             project p
+        where prj.grants_id = pro.grants_id
+          and p.prj_id = pro.prj_id
+          and p.prj_id = #{prjId}
     </select>
     <select id="getPrjId" resultType="String" parameterType="String">
-        select GROUP_CONCAT(DISTINCT p.prj_id) from  prj_grants pg,pro_grants pog,project p
-        where pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2) and pg.grant_ID REGEXP #{fundString}
+        select GROUP_CONCAT(DISTINCT p.prj_id)
+        from prj_grants pg,
+             pro_grants pog,
+             project p
+        where pog.grants_id = pg.grants_id
+          and pog.prj_id = p.prj_id
+          and (p.`status` = 3 or p.`status` = 2)
+          and pg.grant_ID REGEXP #{fundString}
         group by p.note
     </select>
     <select id="getPrjIdList" resultType="String" parameterType="String">
-        select DISTINCT p.prj_id from  prj_grants pg,pro_grants pog,project p
-        where pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2) and pg.grant_ID REGEXP #{fundString}
+        select DISTINCT p.prj_id from prj_grants pg,pro_grants pog,project p
+        where pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2) and pg.grant_ID
+        REGEXP #{fundString}
         <!--<foreach collection="list" item="item" open="(" separator="," close=")">-->
-            <!--#{item}-->
+        <!--#{item}-->
         <!--</foreach>-->
     </select>
     <select id="getGsaAccession" resultMap="DataList" parameterType="list">
@@ -223,114 +316,197 @@
         when c.release_state=1 then "-"
         end) as downloadUrl
         from prj_grants pg,pro_grants pog,project p,cra c
-        where   pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and c.prj_id=p.prj_id and c.`status`=3 and p.prj_id in
+        where pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and c.prj_id=p.prj_id and c.`status`=3 and p.prj_id in
         <foreach collection="list" item="item" open="(" separator="," close=")">
-        #{item}
+            #{item}
         </foreach>
-       group by c.accession
+        group by c.accession
     </select>
     <select id="getPrjAcc" resultType="String" parameterType="String">
-        select GROUP_CONCAT(DISTINCT p.accession) from  prj_grants pg,pro_grants pog,project p
-        where pog.grants_id=pg.grants_id and pog.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2) and pg.grant_ID REGEXP #{fundString}
+        select GROUP_CONCAT(DISTINCT p.accession)
+        from prj_grants pg,
+             pro_grants pog,
+             project p
+        where pog.grants_id = pg.grants_id
+          and pog.prj_id = p.prj_id
+          and (p.`status` = 3 or p.`status` = 2)
+          and pg.grant_ID REGEXP #{fundString}
         group by p.note
     </select>
     <select id="getFundProAcc" resultMap="Fund">
-        select prj.grant_ID as grantId,prj.program as funder,prj.grant_title as fundingName,p.prj_id,p.accession
-        from pro_grants pro ,prj_grants prj,project p
-        where
-         prj.grants_id=pro.grants_id
-        and p.prj_id=pro.prj_id and p.accession=#{accession}
+        select prj.grant_ID as grantId, prj.program as funder, prj.grant_title as fundingName, p.prj_id, p.accession
+        from pro_grants pro,
+             prj_grants prj,
+             project p
+        where prj.grants_id = pro.grants_id
+          and p.prj_id = pro.prj_id
+          and p.accession = #{accession}
     </select>
     <select id="getFastqAchivedData" resultType="double">
-        SELECT IFNULL(sum(rdf.run_file_size)/(281926058404.1026*1024),0) as fastqPb FROM run_data_file rdf WHERE rdf.status=10 AND (rdf.run_data_type_id =1 or rdf.run_data_type_id is null ) ;
+        SELECT IFNULL(sum(rdf.run_file_size) / (281926058404.1026 * 1024), 0) as fastqPb
+        FROM run_data_file rdf
+        WHERE rdf.status = 10
+          AND (rdf.run_data_type_id = 1 or rdf.run_data_type_id is null);
     </select>
     <select id="getOtherAchivedData" resultType="double">
-        SELECT IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0) as otherPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.run_data_type_id !=1;
+        SELECT IFNULL(sum(rdf.run_file_size) / (1024 * 1024 * 1024 * 1024 * 1024), 0) as otherPb
+        FROM run_data_file rdf
+        WHERE rdf.status = 10
+          and rdf.run_data_type_id !=1;
     </select>
     <select id="getFastqPubData" resultType="double">
-            SELECT IFNULL(sum(rdf.run_file_size)/(281926058404.1026*1024),0) as fastqPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.release_state=2 AND (rdf.run_data_type_id =1 or rdf.run_data_type_id is null ) ;
+        SELECT IFNULL(sum(rdf.run_file_size) / (281926058404.1026 * 1024), 0) as fastqPb
+        FROM run_data_file rdf
+        WHERE rdf.status = 10
+          and rdf.release_state = 2
+          AND (rdf.run_data_type_id = 1 or rdf.run_data_type_id is null);
     </select>
     <select id="getOtherPubData" resultType="double">
-        SELECT IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024*1024),0) as otherPb FROM run_data_file rdf WHERE rdf.status=10 and rdf.release_state=2 and rdf.run_data_type_id !=1;
+        SELECT IFNULL(sum(rdf.run_file_size) / (1024 * 1024 * 1024 * 1024 * 1024), 0) as otherPb
+        FROM run_data_file rdf
+        WHERE rdf.status = 10
+          and rdf.release_state = 2
+          and rdf.run_data_type_id !=1;
     </select>
     <select id="getUserList" resultType="String">
-        select DISTINCT cas_user_id from user where is_deleted=0 and is_active=1
+        select DISTINCT cas_user_id
+        from user
+        where is_deleted = 0
+          and is_active = 1
     </select>
     <select id="getUserOrgList" resultType="String">
-        select DISTINCT (case when organization_standard is not null then organization_standard when organization_standard is null then organization end) from user
+        select DISTINCT (case
+                             when organization_standard is not null then organization_standard
+                             when organization_standard is null then organization end)
+        from user
     </select>
     <select id="getGrants" resultType="int">
-        select count(DISTINCT prj.grant_ID) as projects from project p,pro_grants pro,prj_grants prj
-		where prj.grants_id=pro.grants_id and pro.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2)
+        select count(DISTINCT prj.grant_ID) as projects
+        from project p,
+             pro_grants pro,
+             prj_grants prj
+        where prj.grants_id = pro.grants_id
+          and pro.prj_id = p.prj_id
+          and (p.`status` = 3 or p.`status` = 2)
     </select>
     <select id="getAgencys" resultType="int">
-        select count(DISTINCT prj.agency) as projects from project p,pro_grants pro,prj_grants prj
-        where prj.grants_id=pro.grants_id and pro.prj_id=p.prj_id and (p.`status`=3 or p.`status`=2)
+        select count(DISTINCT prj.agency) as projects
+        from project p,
+             pro_grants pro,
+             prj_grants prj
+        where prj.grants_id = pro.grants_id
+          and pro.prj_id = p.prj_id
+          and (p.`status` = 3 or p.`status` = 2)
     </select>
     <select id="getArticleCounts" resultType="int">
-		SELECT count(DISTINCT article_title) FROM publication a WHERE a.gsa_linked>0
+        SELECT count(DISTINCT article_title)
+        FROM publication a
+        WHERE a.gsa_linked > 0
     </select>
     <select id="getJournalCounts" resultType="int">
-		select count(id) from journal where is_used=1
+        select count(id)
+        from journal
+        where is_used = 1
     </select>
     <select id="selectCraByAccession" resultMap="CraDownLoad">
-				SELECT
-			a.accession,CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",a.accession) as craUrl,a.title,a.description,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as downloadSize
-		FROM
-			cra a
-		LEFT JOIN
-			run_data_file b ON b.cra_id=a.cra_id and b.status=10
-		WHERE
-			a.accession = #{accession}
+        SELECT a.accession,
+               CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/", a.accession)            as craUrl,
+               a.title,
+               a.description,
+               CONVERT(sum(b.run_file_size) / (1024 * 1024 * 1024), decimal (10, 0)) as downloadSize
+        FROM cra a
+                 LEFT JOIN
+             run_data_file b ON b.cra_id = a.cra_id and b.status = 10
+        WHERE a.accession = #{accession}
     </select>
     <select id="selectCraByProAccession" resultMap="CraDownLoad">
-		SELECT
-			a.accession,CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/",a.accession) as craUrl,a.title,a.description,CONVERT (sum(b.run_file_size)/(1024*1024*1024),decimal(10,0)) as downloadSize
-		FROM
-			project c
-		LEFT JOIN
-			run_data_file b ON b.prj_id=c.prj_id and b.status=10
-		LEFT JOIN
-			cra a ON a.cra_id=b.cra_id
-		WHERE
-			c.accession = #{accession}
+        SELECT a.accession,
+               CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/", a.accession)            as craUrl,
+               a.title,
+               a.description,
+               CONVERT(sum(b.run_file_size) / (1024 * 1024 * 1024), decimal (10, 0)) as downloadSize
+        FROM project c
+                 LEFT JOIN
+             run_data_file b ON b.prj_id = c.prj_id and b.status = 10
+                 LEFT JOIN
+             cra a ON a.cra_id = b.cra_id
+        WHERE c.accession = #{accession}
     </select>
-    <select id="selectMaxPb"  resultType="Double">
-		select  max(a.maxPb) as max from (select sum(DISTINCT file_size) as maxPb from date_file_size group by date order by sum(file_size) desc,date desc) a
-	</select>
-    <select id="selectAllDate"  resultType="DateFileSize">
-		select date,sum(DISTINCT file_size) as fileSize from date_file_size group by date
-	</select>
+    <select id="selectMaxPb" resultType="Double">
+        select max(a.maxPb) as max
+        from (select sum (DISTINCT file_size) as maxPb from date_file_size group by date order by sum (file_size) desc, date desc) a
+    </select>
+    <select id="selectAllDate" resultType="DateFileSize">
+        select date, sum (DISTINCT file_size) as fileSize
+        from date_file_size
+        group by date
+    </select>
     <select id="getCraCountByPrjIdNoDelete" resultType="int" parameterType="int">
-        select count(cra_id) from cra where status!=5 and prj_id=#{prjId}
+        select count(cra_id)
+        from cra
+        where status!=5 and prj_id=#{prjId}
     </select>
     <select id="getCraCountBySubmissionIdNoDelete" resultType="int" parameterType="String">
-        SELECT count(e.exp_id) FROM experiment e,sample s WHERE s.sample_id=e.sample_id and s.submissionId=#{submissionId} AND s.status != 5 and e.`status`!=5
+        SELECT count(e.exp_id)
+        FROM experiment e,
+             sample s
+        WHERE s.sample_id = e.sample_id
+          and s.submissionId = #{submissionId}
+          AND s.status != 5 and e.`status`!=5
     </select>
     <select id="getHumanCountBySubmissionIdNoDelete" resultType="int" parameterType="String">
-        select count(synchronization_accession) from sample where submissionId=#{submissionId} and `status`!=5
+        select count(synchronization_accession)
+        from sample
+        where submissionId = #{submissionId}
+          and `status`!=5
     </select>
 
     <select id="getCraCountBySampleIdNoDelete" resultType="int" parameterType="int">
-        SELECT count(e.exp_id) FROM experiment e,sample s WHERE s.sample_id=e.sample_id and s.sample_id=#{sampleId} AND s.status != 5 and e.`status`!=5
+        SELECT count(e.exp_id)
+        FROM experiment e,
+             sample s
+        WHERE s.sample_id = e.sample_id
+          and s.sample_id = #{sampleId}
+          AND s.status != 5 and e.`status`!=5
     </select>
     <select id="getHumanCountBySampleIdNoDelete" resultType="int" parameterType="int">
-        select count(synchronization_accession) from sample where sample_id=#{sampleId} and `status`!=5
+        select count(synchronization_accession)
+        from sample
+        where sample_id = #{sampleId}
+          and `status`!=5
     </select>
     <select id="getCraCountsBySampleType" resultType="SampleTypeCounts">
-        select s.sample_type_id as sampleTypeId,count(DISTINCT e.cra_id) as counts from sample s,experiment e,cra c
-        where s.status=3 and e.`status`=3 and e.sample_id=s.sample_id and c.`status`=3 and c.cra_id=e.cra_id
+        select s.sample_type_id as sampleTypeId, count(DISTINCT e.cra_id) as counts
+        from sample s,
+             experiment e,
+             cra c
+        where s.status = 3
+          and e.`status` = 3
+          and e.sample_id = s.sample_id
+          and c.`status` = 3
+          and c.cra_id = e.cra_id
         group by s.sample_type_id;
     </select>
     <select id="getCraFileSizeBySampleType1" resultType="SampleTypeFileSize">
-        select s.sample_type_id as sampleTypeId,IFNULL(sum(rdf.run_file_size)/(281926058404.1026),0) as fileSize from sample s,run_data_file rdf
-        where s.status=3 and rdf.`status`=10 and rdf.sample_id=s.sample_id and (rdf.run_data_type_id =1 or rdf.run_data_type_id is null )
+        select s.sample_type_id as sampleTypeId, IFNULL(sum(rdf.run_file_size) / (281926058404.1026), 0) as fileSize
+        from sample s,
+             run_data_file rdf
+        where s.status = 3
+          and rdf.`status` = 10
+          and rdf.sample_id = s.sample_id
+          and (rdf.run_data_type_id = 1 or rdf.run_data_type_id is null)
         group by s.sample_type_id
     </select>
 
     <select id="getCraFileSizeBySampleType2" resultType="SampleTypeFileSize">
-        select s.sample_type_id as sampleTypeId,IFNULL(sum(rdf.run_file_size)/(1024*1024*1024*1024),0) as fileSize from sample s,run_data_file rdf
-        where s.status=3 and rdf.`status`=10 and rdf.sample_id=s.sample_id and rdf.run_data_type_id !=1
+        select s.sample_type_id                                                as sampleTypeId,
+               IFNULL(sum(rdf.run_file_size) / (1024 * 1024 * 1024 * 1024), 0) as fileSize
+        from sample s,
+             run_data_file rdf
+        where s.status = 3
+          and rdf.`status` = 10
+          and rdf.sample_id = s.sample_id
+          and rdf.run_data_type_id !=1
         group by s.sample_type_id
     </select>
 

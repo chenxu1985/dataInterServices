@@ -40,11 +40,11 @@ public class Machine {
     private String jobTotal;
     private String jobRun;
     private String jobQueue;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;
-    private List<Integer>chartList;
-    private List<Integer>memList;
-    private List<String>timeList;
+    private List<Integer> chartList;
+    private List<Integer> memList;
+    private List<String> timeList;
 
     public Integer getMachineLogId() {
         return machineLogId;

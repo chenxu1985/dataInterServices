@@ -5,7 +5,8 @@ import java.util.Map;
 
 public interface NcbiMapper {
     Double selectMaxPb();
-    Double getFileSizeByDate(Map<String,String> params);
+
+    Double getFileSizeByDate(Map<String, String> params);
 
     Double getFileSizeAll();
 }
