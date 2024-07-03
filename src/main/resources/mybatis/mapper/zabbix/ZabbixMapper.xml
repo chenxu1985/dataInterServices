@@ -26,30 +26,30 @@
     <select id="getUploadRealTime" resultType="Real">
         select itemid, from_unixtime(clock) as time, value, `value`*0.000000001 as gbps
         from history_uint
-        where itemid = 43203
+        where itemid = 44486
         order by clock desc limit 1;
     </select>
     <select id="getDownLoadRealTime" resultType="Real">
         select itemid, from_unixtime(clock) as time, value, `value`*0.000000001 as gbps
         from history_uint
-        where itemid = 43204
+        where itemid = 44510
         order by clock desc limit 1;
     </select>
 
     <select id="getUploadRealDetail" resultType="Traffic">
         select itemid, from_unixtime(clock) as time,value
         from history_uint
-        where itemid=43203;
+        where itemid=44486;
     </select>
     <select id="getDownLoadRealDetail" resultType="Traffic">
         select itemid, from_unixtime(clock) as time,value
         from history_uint
-        where itemid=43204;
+        where itemid=44510;
     </select>
     <select id="getUploadTrafficHistoryList" resultType="TrafficHistoryDetail" parameterType="int">
         select itemid, DATE_FORMAT(FROM_UNIXTIME(clock), '%m-%d') as time, AVG(value_avg)*0.000000001 as avg
         from trends_uint
-        where itemid=43203
+        where itemid=44486
           and clock >= unix_timestamp(DATE_SUB(NOW()
             , INTERVAL #{day} DAY))
           and clock &lt;= NOW()
@@ -58,7 +58,7 @@
     <select id="getDownLoadTrafficHistoryList" resultType="TrafficHistoryDetail" parameterType="int">
         select itemid, DATE_FORMAT(FROM_UNIXTIME(clock), '%m-%d') as time, AVG(value_avg)*0.000000001 as avg
         from trends_uint
-        where itemid=43204
+        where itemid=44510
           and clock >= unix_timestamp(DATE_SUB(NOW()
             , INTERVAL #{day} DAY))
           and clock &lt;= NOW()
@@ -67,14 +67,14 @@
     <select id="getUploadTraffic" resultType="double" parameterType="int">
         select sum(value_avg * 3600) / 8 / 1024 / 1024 / 1024
         from trends_uint
-        where itemid = 43203
+        where itemid = 44486
           and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL #{day} DAY))
           and clock &lt;= NOW();
     </select>
     <select id="getDownLoadTraffic" resultType="double" parameterType="int">
         select sum(value_avg * 3600) / 8 / 1024 / 1024 / 1024
         from trends_uint
-        where itemid = 43204
+        where itemid = 44510
           and clock >= unix_timestamp(DATE_SUB(NOW(), INTERVAL #{day} DAY))
           and clock &lt;= NOW();
     </select>
@@ -82,7 +82,7 @@
         select itemid,
                TRIM(LEADING '0' FROM DATE_FORMAT(FROM_UNIXTIME(clock), '%m月')) as time, AVG(value_avg)*0.000000001 as avg
         from trends_uint
-        where itemid=43203
+        where itemid=44486
           and clock >= unix_timestamp(DATE_SUB(NOW()
             , INTERVAL 11 MONTH))
           and clock &lt;= NOW()
@@ -92,7 +92,7 @@
         select itemid,
                TRIM(LEADING '0' FROM DATE_FORMAT(FROM_UNIXTIME(clock), '%m月')) as time, AVG(value_avg)*0.000000001 as avg
         from trends_uint
-        where itemid=43204
+        where itemid=44510
           and clock >= unix_timestamp(DATE_SUB(NOW()
             , INTERVAL 11 MONTH))
           and clock &lt;= NOW()
