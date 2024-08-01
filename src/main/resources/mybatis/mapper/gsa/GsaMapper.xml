@@ -376,8 +376,8 @@
     </select>
     <select id="getUserOrgList" resultType="String">
         select DISTINCT (case
-                             when organization_standard is not null then organization_standard
-                             when organization_standard is null then organization end)
+        when organization_standard is not null then organization_standard
+        when organization_standard is null then organization end)
         from user
     </select>
     <select id="getGrants" resultType="int">
@@ -410,7 +410,7 @@
     </select>
     <select id="selectCraByAccession" resultMap="CraDownLoad">
         SELECT a.accession,
-               CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/", a.accession)            as craUrl,
+               CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/", a.accession) as craUrl,
                a.title,
                a.description,
                CONVERT(sum(b.run_file_size) / (1024 * 1024 * 1024), decimal (10, 0)) as downloadSize
@@ -421,7 +421,7 @@
     </select>
     <select id="selectCraByProAccession" resultMap="CraDownLoad">
         SELECT a.accession,
-               CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/", a.accession)            as craUrl,
+               CONCAT("https://ngdc.cncb.ac.cn/gsa/browse/", a.accession) as craUrl,
                a.title,
                a.description,
                CONVERT(sum(b.run_file_size) / (1024 * 1024 * 1024), decimal (10, 0)) as downloadSize
@@ -434,10 +434,10 @@
     </select>
     <select id="selectMaxPb" resultType="Double">
         select max(a.maxPb) as max
-        from (select sum (DISTINCT file_size) as maxPb from date_file_size group by date order by sum (file_size) desc, date desc) a
+        from (select sum(DISTINCT file_size) as maxPb from date_file_size group by date order by sum(file_size) desc, date desc) a
     </select>
     <select id="selectAllDate" resultType="DateFileSize">
-        select date, sum (DISTINCT file_size) as fileSize
+        select date, sum(DISTINCT file_size) as fileSize
         from date_file_size
         group by date
     </select>
@@ -499,7 +499,7 @@
     </select>
 
     <select id="getCraFileSizeBySampleType2" resultType="SampleTypeFileSize">
-        select s.sample_type_id                                                as sampleTypeId,
+        select s.sample_type_id as sampleTypeId,
                IFNULL(sum(rdf.run_file_size) / (1024 * 1024 * 1024 * 1024), 0) as fileSize
         from sample s,
              run_data_file rdf
