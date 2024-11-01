@@ -60,7 +60,7 @@ public class DataController {
         List<DataList> omixList = JSONObject.parseArray(array.toJSONString(),DataList.class);
         fairLists.addAll(omixList);
         //biocode
-        String biocodeUrl = "http://192.168.164.16:12321/biocode/getFairAccession/"+fundPam;
+        String biocodeUrl = "http://192.168.164.19:19600/biocode/getFairAccession/"+fundPam;
         String resultBio = "";
         resultBio  = HttpRequestUtil.doHttpGetResponseJson(biocodeUrl, null);
         List<DataList> bioList = JSONObject.parseArray(resultBio,DataList.class);
@@ -139,7 +139,7 @@ public class DataController {
                 urlLink= "https://ngdc.cncb.ac.cn/omix/getDetailOmix/"+accession;
                 simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             } else if(accession.contains("BT")){
-                urlLink = "http://192.168.164.16:12321/biocode/getFairDetailBiocode/"+accession;
+                urlLink = "http://192.168.164.19:19600/biocode/getFairDetailBiocode/"+accession;
                 simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             } else if(accession.contains("GWH")){
                 urlLink = "https://ngdc.cncb.ac.cn/gwh/getDetailGwh/"+accession;
